@@ -200,8 +200,8 @@ def solve_greedy(clients):
             current_position = closest_client["position"]
             remaining_clients.remove(closest_client)
 
-        # optimized_tour = optimize_tour(tour, clients)
-        optimized_tour = tour
+        optimized_tour = optimize_tour(tour, clients)
+        # optimized_tour = tour
 
         tours.append(optimized_tour)
 
