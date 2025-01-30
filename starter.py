@@ -88,9 +88,26 @@ def display_map(clients, tours):
 
     plt.show()
 
+def solve_greedy_all(clients):
+    # split clients in 4 (< / > 0 for x and y)
+    all_splits = [
+        [c for c in clients if c["position"][0] < 0 and c["position"][1] < 0],
+        [c for c in clients if c["position"][0] < 0 and c["position"][1] > 0],
+        [c for c in clients if c["position"][0] > 0 and c["position"][1] < 0],
+        [c for c in clients if c["position"][0] > 0 and c["position"][1] > 0]
+    ]
+
+    tours = []
+
+    for split in all_splits:
+        tours += solve_greedy(split)
+
+    return tours
+
 def solve_greedy(clients):
     # for each tour, find the closest client with less than capacity pizzas and go to it
     # repeat until all clients are delivered
+
 
     # copy the list of clients
     remaining_clients = clients.copy()
@@ -129,7 +146,7 @@ def solve():
 
     clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
-    tours = solve_greedy(clients)
+    tours = solve_greedy_all(clients)
 
     display_map(clients, tours)
 
