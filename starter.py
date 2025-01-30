@@ -71,6 +71,10 @@ def display_map(clients, tours):
 
     fig, ax = plt.subplots()
 
+    # set figsize dimensions to 1000px
+    fig.set_size_inches(10, 10)
+
+
     # show the depot
     ax.scatter(*depot, c="red", s=100, marker="s", label="Depot")
 
