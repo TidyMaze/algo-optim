@@ -67,8 +67,8 @@ def get_score(tours_string):
 #------ vvv Améliorez ceci ! vvv ------
 
 # TD try:
-# - stop crossing inside a tour
-# - biggest first?
+# - stop crossing inside a tour => Small improvement
+# - biggest first inside tour => NO
 # - beam-search?
 
 
@@ -194,9 +194,15 @@ def solve_greedy(clients):
                 # go to the depot
                 break
 
-            closest_client = min(can_select_clients, key=lambda c: (
+            sort_fn = lambda c: (
                 manhattan_distance(current_position, c["position"]),
-            ))
+            )
+
+            sort_fn_piz = lambda c: (
+                manhattan_distance(current_position, c["position"]) * 5 - c["pizzas"] * 10,
+            )
+
+            closest_client = min(can_select_clients, key=sort_fn_piz)
             tour.append(closest_client["id"])
             current_load += closest_client["pizzas"]
             current_position = closest_client["position"]
