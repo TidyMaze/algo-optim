@@ -160,21 +160,27 @@ def solve_greedy_all(clients):
         [c for c in clients if c["position"][0] > 0 and c["position"][1] > 0]
     ]
 
+    remaining_all_splits = all_splits.copy()
+
     tours = []
 
-    for split in all_splits:
-        tours += solve_greedy(split)
+    for split in remaining_all_splits:
+        remaining_all_splits.remove(split)
+        tours += solve_greedy(split, remaining_all_splits)
 
     return tours
 
-def solve_greedy(clients):
+def solve_greedy(clients, remaining_all_splits):
     # for each tour, find the closest client with less than capacity pizzas and go to it
     # repeat until all clients are delivered
-
 
     # copy the list of clients
     remaining_clients = clients.copy()
     tours = []
+
+    sort_fn_piz = lambda c: (
+        manhattan_distance(current_position, c["position"]) * 5 - c["pizzas"] ** 3,
+    )
 
     while remaining_clients:
         # find the closest client to the depot
@@ -185,34 +191,47 @@ def solve_greedy(clients):
 
         tour = []
 
+
+
         while current_load < capacity:
             # find the closest client to the current position that has less than remaining capacity
             remaining_capacity = capacity - current_load
 
             can_select_clients = [c for c in remaining_clients if c["pizzas"] <= remaining_capacity]
             if not can_select_clients:
-                # go to the depot
-                break
+                # try to find another client (any split) that has less than remaining capacity
+                best_client_fallback = None
 
-            sort_fn = lambda c: (
-                manhattan_distance(current_position, c["position"]),
-            )
+                for split in remaining_all_splits:
+                    can_select_clients_fallback = [c for c in split if c["pizzas"] <= remaining_capacity]
+                    if can_select_clients_fallback:
+                        best_client_fallback = min(can_select_clients_fallback, key=sort_fn_piz)
 
-            sort_fn_piz = lambda c: (
-                manhattan_distance(current_position, c["position"]) * 5 - c["pizzas"] ** 3,
-            )
+                        break
 
-            closest_client = min(can_select_clients, key=sort_fn_piz)
-            tour.append(closest_client["id"])
-            current_load += closest_client["pizzas"]
-            current_position = closest_client["position"]
-            remaining_clients.remove(closest_client)
+                if not best_client_fallback:
+                    break
+
+                go_to_client = best_client_fallback
+                tour.append(go_to_client["id"])
+                current_load += go_to_client["pizzas"]
+                current_position = go_to_client["position"]
+
+            else:
+                go_to_client = min(can_select_clients, key=sort_fn_piz)
+                tour.append(go_to_client["id"])
+                current_load += go_to_client["pizzas"]
+                current_position = go_to_client["position"]
+                remaining_clients.remove(go_to_client)
 
         optimized_tour = optimize_tour(tour, clients)
 
         tours.append(optimized_tour)
 
     return tours
+
+def solve_beam_search(clients):
+    return clients
 
 # Solution minimale : faire une tournée par client
 def solve():
