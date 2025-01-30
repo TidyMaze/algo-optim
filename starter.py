@@ -199,7 +199,7 @@ def solve_greedy(clients):
             )
 
             sort_fn_piz = lambda c: (
-                manhattan_distance(current_position, c["position"]) * 5 - c["pizzas"] * 10,
+                manhattan_distance(current_position, c["position"]) * 5 - c["pizzas"] ** 3,
             )
 
             closest_client = min(can_select_clients, key=sort_fn_piz)
