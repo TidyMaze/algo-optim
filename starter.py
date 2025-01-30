@@ -178,7 +178,7 @@ def solve_greedy(clients):
 
     while remaining_clients:
         # find the closest client to the depot
-        closest_client = min(remaining_clients, key=lambda c: manhattan_distance(depot, c["position"]))
+        # closest_client = min(remaining_clients, key=lambda c: manhattan_distance(depot, c["position"]))
 
         current_position = depot
         current_load = 0
@@ -194,14 +194,15 @@ def solve_greedy(clients):
                 # go to the depot
                 break
 
-            closest_client = min(can_select_clients, key=lambda c: manhattan_distance(current_position, c["position"]))
+            closest_client = min(can_select_clients, key=lambda c: (
+                manhattan_distance(current_position, c["position"]),
+            ))
             tour.append(closest_client["id"])
             current_load += closest_client["pizzas"]
             current_position = closest_client["position"]
             remaining_clients.remove(closest_client)
 
         optimized_tour = optimize_tour(tour, clients)
-        # optimized_tour = tour
 
         tours.append(optimized_tour)
 
