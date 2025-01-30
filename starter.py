@@ -56,6 +56,8 @@ def get_score(tours_string):
             total_distance += manhattan_distance(current_position, client["position"])
             current_position = client["position"]
 
+        total_distance += manhattan_distance(current_position, depot)
+
     if delivered_ids != client_ids:
         return 0, False, f"❌ Erreur : {len(client_ids - delivered_ids)} clients n'ont pas été livrés."
 
@@ -70,9 +72,35 @@ def get_score(tours_string):
 # - beam-search?
 
 
-def optimize_tour(tour, client):
-    # check
-    return tour
+def optimize_tour(tour, clients):
+    # for each client in the tour, try to swap it with the next client and keep it if the distance is shorter
+
+    best_tour = tour
+    best_found = True
+
+    while best_found:
+        for i, client_id in enumerate(best_tour[:-1]):
+            next_client_id = best_tour[i+1]
+
+            # try to swap client with next_client
+            new_tour = best_tour.copy()
+            new_tour[i] = next_client_id
+            new_tour[i+1] = client_id
+
+            if tour_distance(new_tour, clients) < tour_distance(best_tour, clients):
+                best_tour = new_tour
+                best_found = True
+                break
+
+        best_found = False
+
+    new_dist = tour_distance(best_tour, clients)
+    old_dist = tour_distance(tour, clients)
+
+    if new_dist > old_dist:
+        raise ValueError(f"Tour distance increased after optimization: {old_dist} -> {new_dist}")
+
+    return best_tour
 
 
 def display_map(clients, tours):
@@ -172,7 +200,10 @@ def solve_greedy(clients):
             current_position = closest_client["position"]
             remaining_clients.remove(closest_client)
 
-        tours.append(tour)
+        # optimized_tour = optimize_tour(tour, clients)
+        optimized_tour = tour
+
+        tours.append(optimized_tour)
 
     return tours
 
