@@ -64,6 +64,17 @@ def get_score(tours_string):
 
 #------ vvv Améliorez ceci ! vvv ------
 
+# TD try:
+# - stop crossing inside a tour
+# - biggest first?
+# - beam-search?
+
+
+def optimize_tour(tour, client):
+    # check
+    return tour
+
+
 def display_map(clients, tours):
     # display the map using matplotlib
     import matplotlib.pyplot as plt
@@ -82,8 +93,12 @@ def display_map(clients, tours):
     for client in clients:
         ax.scatter(*client["position"], s=client["pizzas"]*10, alpha=0.5)
 
+    print(f"Tours count: {len(tours)}")
+    print(f"Avg client per tour: {sum(len(t) for t in tours) / len(tours)}")
+
     # show the lines of the tours
     for tour in tours:
+        print(f"Tour length: {len(tour)} - tour distance: {tour_distance(tour, clients)}")
         positions = [depot] + [next((client["position"] for client in clients if client["id"] == client_id), None) for client_id in tour]
         positions = [pos for pos in positions if pos is not None]
         positions.append(depot)
@@ -91,6 +106,22 @@ def display_map(clients, tours):
         ax.plot(positions[:, 0], positions[:, 1], linestyle="--")
 
     plt.show()
+
+def tour_distance(tour, clients):
+    # calculate the distance of a tour
+    distance = 0
+    current_position = depot
+
+    for client_id in tour:
+        client = next((c for c in clients if c["id"] == client_id), None)
+        if not client:
+            raise ValueError(f"Client {client_id} not found")
+        distance += manhattan_distance(current_position, client["position"])
+        current_position = client["position"]
+
+    distance += manhattan_distance(current_position, depot)
+
+    return distance
 
 def solve_greedy_all(clients):
     # split clients in 4 (< / > 0 for x and y)
