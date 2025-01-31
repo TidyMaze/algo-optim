@@ -168,13 +168,13 @@ def solve_greedy_all(clients):
 
     return tours
 
-def expand_beam(beam, score, used_clients, clients):
+def expand_beam(beam, score, used_clients, clients, wasted):
     new_beams_local = []
     at_least_a_new_client_added = False
     remaining_clients = [c for c in clients if c["id"] not in used_clients]
 
     if not remaining_clients:
-        new_beams_local.append((beam, score, used_clients))
+        new_beams_local.append((beam, score, used_clients, wasted))
         return new_beams_local, at_least_a_new_client_added
 
     last_tour = beam[-1] if beam else []
@@ -197,7 +197,9 @@ def solve_beam_search(clients):
             # total score of the beam
             0,
             # empty set of used clients
-            set()
+            set(),
+            # wasted capacity
+            0
         )
     ]
 
@@ -215,24 +217,26 @@ def solve_beam_search(clients):
 
         new_beams = []
 
-        for beam, score, used_clients in beams:
-            res = expand_beam(beam, score, used_clients, clients)
+        for beam, score, used_clients, wasted in beams:
+            res = expand_beam(beam, score, used_clients, clients, wasted)
             new_beams.extend(res[0])
             at_least_a_new_client_added = at_least_a_new_client_added or res[1]
 
         print(f"Beams count: {len(new_beams)}")
 
         # sort the beams by score and keep only the best ones
-        new_beams = sorted(new_beams, key=lambda b: b[1])[:beam_size]
+        new_beams = sorted(new_beams, key=lambda b:
+            b[1] + b[3]
+        )[:beam_size]
 
         max_display_beams = 3
 
         print("New beams top:")
-        for i, (beam, score, used_clients) in enumerate(new_beams[:max_display_beams]):
-            print(f"Beam {i} - score: {score} - tours: {beam[-1]}")
+        for i, (beam, score, used_clients, wasted) in enumerate(new_beams[:max_display_beams]):
+            print(f"Beam {i} - score: {score} - tours: {beam[-1]} - wasted: {wasted}")
 
         # draw the best beam
-        # display_map(clients, new_beams[0][0])
+        display_map(clients, new_beams[0][0])
 
         # replace the beams with the new beams
         beams = new_beams
@@ -265,7 +269,14 @@ def build_new_beam(beam, new_client, capacity, clients, last_tour, used_clients)
     new_used_clients = used_clients.copy()
     new_used_clients.add(new_client["id"])
 
-    return new_beam, new_tours_score, new_used_clients
+    # how many capacity is wasted in all tours
+    lost_capacity = 0
+
+    for tour in new_beam:
+        tour_capacity = sum(clients[c]["pizzas"] for c in tour)
+        lost_capacity += 10 - tour_capacity
+
+    return new_beam, new_tours_score, new_used_clients, lost_capacity
 
 
 def get_tours_distance(clients, tours):
