@@ -229,7 +229,7 @@ def solve_beam_search(clients):
 
         # sort the beams by score and keep only the best ones
         new_beams = sorted(new_beams, key=lambda b:
-            b[1] ** 2 + b[3] ** 2
+            b[1] ** 3 + b[3]
         )[:beam_size]
 
         max_display_beams = 3
