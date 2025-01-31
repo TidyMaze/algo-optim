@@ -264,7 +264,7 @@ def solve_beam_search(clients):
 
         print("New beams top:")
         for i, (beam, score, used_clients, wasted) in enumerate(new_beams[:max_display_beams]):
-            print(f"Beam {i} - score: {score} - tours: {beam[-1]} - wasted: {wasted}")
+            print(f"Beam {i} - score: {score} - tours: {beam} - wasted: {wasted}")
 
         # draw the best beam
 
