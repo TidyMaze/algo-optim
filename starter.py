@@ -246,7 +246,7 @@ def solve_beam_search(clients):
         if depth > 1000:
             raise ValueError("Too many iterations")
 
-        print(f"Generation {depth}")
+        print(f"Generation {depth} - Beams count: {len(beams)}")
 
         with Pool(core_count) as p:
             results = p.starmap(expand_beam, [(beam, score, used_clients, clients, wasted) for beam, score, used_clients, wasted in beams])
