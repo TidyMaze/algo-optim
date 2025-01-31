@@ -226,9 +226,7 @@ def solve_beam_search(clients):
                     new_beam = beam + [[new_client["id"]]]
 
                 new_tours_score = sum(tour_distance(t, clients) for t in new_beam)
-
                 new_beams.append((new_beam, new_tours_score))
-
                 at_least_a_new_client_added = True
 
                 # only add the new tour if it doesn't exceed the capacity
