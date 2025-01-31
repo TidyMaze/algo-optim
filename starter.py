@@ -126,7 +126,7 @@ def display_map(clients, tours, depth, score):
     for client in clients:
         ax.scatter(*client["position"], s=(client["pizzas"]*3)**2, alpha=0.5)
         # also add a label with the client id and the number of pizzas
-        ax.text(client["position"][0], client["position"][1], f"{client['id']} - {client['pizzas']}")
+        # ax.text(client["position"][0], client["position"][1], f"{client['id']} - {client['pizzas']}")
 
 
     print(f"Tours count: {len(tours)}")
@@ -194,7 +194,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 200
+    beam_size = 1000
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
