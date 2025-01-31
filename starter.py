@@ -188,6 +188,38 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     last_tour = beam[-1] if beam else []
     capacity = 10 - sum(c["pizzas"] for c in clients if c["id"] in last_tour)
 
+    current_position = depot if not last_tour else clients[last_tour[-1]]["position"]
+
+    print(f"Remaining clients before: {len(remaining_clients)}")
+
+    remaining_clients_filtered = set([])
+
+    keep = 10
+
+    to_add = [
+        # top 10 closest clients from the depot
+        [c for c in sorted(remaining_clients, key=lambda c: manhattan_distance(depot, c["position"]))][:keep],
+        # top 10 farthest clients from the depot
+        [c for c in sorted(remaining_clients, key=lambda c: -manhattan_distance(depot, c["position"]))][:keep],
+        # top 10 closest from current location
+        [c for c in sorted(remaining_clients, key=lambda c: manhattan_distance(current_position, c["position"]))][:keep],
+        # top 10 farthest from current location
+        [c for c in sorted(remaining_clients, key=lambda c: -manhattan_distance(current_position, c["position"]))][:keep],
+        # top 10 clients with the most pizzas
+        [c for c in sorted(remaining_clients, key=lambda c: -c["pizzas"])][:keep],
+        # top 10 clients with the least pizzas
+        [c for c in sorted(remaining_clients, key=lambda c: c["pizzas"])][:keep],
+    ]
+
+    for c in to_add:
+        new = set([c["id"] for c in c])
+        print(f"Adding {new} clients")
+        remaining_clients_filtered.update(new)
+
+    remaining_clients = [c for c in clients if c["id"] in remaining_clients_filtered]
+
+    print(f"Remaining clients after: {len(remaining_clients)}")
+
     for c in remaining_clients:
         new_beam_with_score = build_new_beam(beam, c, capacity, clients, last_tour, used_clients)
         new_beams_local.append(new_beam_with_score)
