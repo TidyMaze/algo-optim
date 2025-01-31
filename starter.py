@@ -191,15 +191,14 @@ def solve_beam_search(clients):
 
         new_beams = []
         for i, (beam, score) in enumerate(beams):
-            print()
-            print(f"Beam: {i} - {beam} - score: {score}")
+            # print(f"Beam: {i} - {beam} - score: {score}")
 
             used_clients = set(c for t in beam for c in t)
             remaining_clients = [c for c in clients if c["id"] not in used_clients]
 
-            print(f"Used clients: {len(used_clients)}: {list(used_clients)[:5]}")
+            # print(f"Used clients: {len(used_clients)}: {list(used_clients)[:5]}")
             remaining_clients_ids = [c["id"] for c in remaining_clients]
-            print(f"Remaining clients: {len(remaining_clients)}: {remaining_clients_ids}")
+            # print(f"Remaining clients: {len(remaining_clients)}: {remaining_clients_ids}")
 
             if not remaining_clients:
                 print("No remaining clients")
@@ -207,7 +206,7 @@ def solve_beam_search(clients):
                 continue
 
             last_tour = beam[-1] if beam else []
-            print(f"Last tour: {last_tour}")
+            # print(f"Last tour: {last_tour}")
 
             last_tour = beam[-1] if beam else []
             capacity = 10 - sum(c["pizzas"] for c in clients if c["id"] in last_tour)
@@ -235,14 +234,16 @@ def solve_beam_search(clients):
                 at_least_a_new_client_added = True
 
                 # only add the new tour if it doesn't exceed the capacity
-                print(f"New beam: {new_beam} - score: {new_tours_score}")
+                # print(f"New beam: {new_beam} - score: {new_tours_score}")
 
         # sort the beams by score and keep only the best ones
         new_beams = sorted(new_beams, key=lambda b: b[1])[:beam_size]
 
-        print("New beams:")
-        for i, (beam, score) in enumerate(new_beams):
-            print(f"Beam: {i} - {beam} - score: {score}")
+        max_display_beams = 3
+
+        print("New beams top:")
+        for i, (beam, score) in enumerate(new_beams[:max_display_beams]):
+            print(f"Beam {i} - score: {score} - tours: {beam}")
 
         # replace the beams with the new beams
         beams = new_beams
