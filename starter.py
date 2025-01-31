@@ -402,7 +402,7 @@ def solve_pairs(clients):
 
     return tours
 
-# Solution minimale : faire une tournée par client
+# Solution minimale : faire une tournée par c§lient
 def solve():
 
     clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
