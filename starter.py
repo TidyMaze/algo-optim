@@ -194,7 +194,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
 
     remaining_clients_filtered = set([])
 
-    keep = 10
+    keep = 5
 
     to_add = [
         [c for c in sorted(remaining_clients, key=lambda c: manhattan_distance(depot, c["position"]))][:keep],
@@ -222,7 +222,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 100
+    beam_size = 5
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
@@ -268,7 +268,7 @@ def solve_beam_search(clients):
 
         # draw the best beam
 
-        if depth % 1 == 0:
+        if depth % 5 == 0:
             display_map(clients, new_beams[0][0], depth, new_beams[0][1])
 
         # replace the beams with the new beams
