@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from multiprocessing import Pool
 
 
 # Données initiales
@@ -221,10 +222,10 @@ def solve_beam_search(clients):
 
         new_beams = []
 
-        for beam, score, used_clients, wasted in beams:
-            res = expand_beam(beam, score, used_clients, clients, wasted)
-            new_beams.extend(res[0])
-            at_least_a_new_client_added = at_least_a_new_client_added or res[1]
+        with Pool(4) as p:
+            results = p.starmap(expand_beam, [(beam, score, used_clients, clients, wasted) for beam, score, used_clients, wasted in beams])
+            new_beams = [b for res in results for b in res[0]]
+            at_least_a_new_client_added = any(res[1] for res in results)
 
         print(f"Beams count: {len(new_beams)}")
 
@@ -241,8 +242,8 @@ def solve_beam_search(clients):
 
         # draw the best beam
 
-        if depth % 10 == 0:
-            display_map(clients, new_beams[0][0], depth, new_beams[0][1])
+        # if depth % 10 == 0:
+        #     display_map(clients, new_beams[0][0], depth, new_beams[0][1])
 
         # replace the beams with the new beams
         beams = new_beams
