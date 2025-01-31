@@ -4,7 +4,10 @@ capacity = 10  # Capacité maximale du scooter
 
 # Distance de Manhattan
 def manhattan_distance(p1, p2):
-    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+    return fast_abs(p1[0] - p2[0]) + fast_abs(p1[1] - p2[1])
+
+def fast_abs(x):
+    return x if x >= 0 else -x
 
 def load_clients(file_path):
     clients = []
