@@ -215,12 +215,10 @@ def solve_beam_search(clients):
 
         new_beams = []
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(expand_beam, beam, score, used_clients, clients) for beam, score, used_clients in beams]
-            for future in concurrent.futures.as_completed(futures):
-                res = future.result()
-                new_beams.extend(res[0])
-                at_least_a_new_client_added = at_least_a_new_client_added or res[1]
+        for beam, score, used_clients in beams:
+            res = expand_beam(beam, score, used_clients, clients)
+            new_beams.extend(res[0])
+            at_least_a_new_client_added = at_least_a_new_client_added or res[1]
 
         # sort the beams by score and keep only the best ones
         new_beams = sorted(new_beams, key=lambda b: b[1])[:beam_size]
