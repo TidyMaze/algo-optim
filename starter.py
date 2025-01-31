@@ -131,7 +131,7 @@ def display_map(clients, tours, depth, score):
 
     # show the lines of the tours
     for tour in tours:
-        print(f"Tour length: {len(tour)} - tour distance: {tour_distance(tour, clients)}")
+        # print(f"Tour length: {len(tour)} - tour distance: {tour_distance(tour, clients)}")
         positions = [depot] + [next((client["position"] for client in clients if client["id"] == client_id), None) for client_id in tour]
         positions = [pos for pos in positions if pos is not None]
         positions.append(depot)
@@ -191,7 +191,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 3
+    beam_size = 4
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
