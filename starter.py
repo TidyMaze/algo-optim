@@ -206,7 +206,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     ]
 
     for c in to_add:
-        new = set([c["id"] for c in c])
+        new = set([d["id"] for d in c])
         # print(f"Adding {new} clients")
         remaining_clients_filtered.update(new)
 
