@@ -318,12 +318,56 @@ def solve_greedy(clients):
 
     return tours
 
+def solve_pairs(clients):
+    # first, sort the clients by the number of pizzas
+    clients_copy = clients.copy()
+    clients_copy.sort(key=lambda c: c["pizzas"], reverse=True)
+
+    # find the clients with the most pizzas that are closest to the depot
+    # and keeps looking for big pizzas clients until the capacity is reached
+
+    tours = []
+
+    current_position = depot
+    current_load = 0
+    current_tour = []
+
+    while clients_copy:
+        # find the closest client to the current position that has less than remaining capacity
+        remaining_capacity = capacity - current_load
+
+        can_select_clients = [c for c in clients_copy if c["pizzas"] <= remaining_capacity]
+        if not can_select_clients:
+            # go to the depot
+            tours.append(current_tour)
+            current_tour = []
+            current_load = 0
+            continue
+
+        sort_fn_piz = lambda c: (
+            (-c["pizzas"], manhattan_distance(current_position, c["position"])),
+        )
+
+        closest_client = min(can_select_clients, key=sort_fn_piz)
+        current_tour.append(closest_client["id"])
+        current_load += closest_client["pizzas"]
+        current_position = closest_client["position"]
+        clients_copy.remove(closest_client)
+
+    print(f"Adding tour")
+    for c in current_tour:
+        print(f"Client {c} - {clients[c]['pizzas']} pizzas")
+
+    tours.append(current_tour)
+
+    return tours
+
 # Solution minimale : faire une tournée par client
 def solve():
 
     clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
-    tours = solve_beam_search(clients)
+    tours = solve_pairs(clients)
 
     display_map(clients, tours)
 
