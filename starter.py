@@ -173,7 +173,7 @@ def solve_beam_search(clients):
         # each beam is a list of tours and the score of the tour (distance)
         (
             # the tours
-            [[]],
+            [],
             # total score of the beam
             0
         )
@@ -182,20 +182,24 @@ def solve_beam_search(clients):
     depth = 0
 
     while True:
-        if depth > 400:
+        if depth > 1000:
             raise ValueError("Too many iterations")
 
         print(f"Generation {depth}")
 
+        at_least_a_new_client_added = False
+
         new_beams = []
         for i, (beam, score) in enumerate(beams):
+            print()
             print(f"Beam: {i} - {beam} - score: {score}")
 
             used_clients = set(c for t in beam for c in t)
             remaining_clients = [c for c in clients if c["id"] not in used_clients]
 
             print(f"Used clients: {len(used_clients)}: {list(used_clients)[:5]}")
-            print(f"Remaining clients: {len(remaining_clients)}: {remaining_clients[:5]}")
+            remaining_clients_ids = [c["id"] for c in remaining_clients]
+            print(f"Remaining clients: {len(remaining_clients)}: {remaining_clients_ids}")
 
             if not remaining_clients:
                 print("No remaining clients")
@@ -205,22 +209,46 @@ def solve_beam_search(clients):
             last_tour = beam[-1] if beam else []
             print(f"Last tour: {last_tour}")
 
-            current_position = depot if not last_tour else next((c["position"] for c in clients if c["id"] == last_tour[-1]), depot)
-            capacity = 10 - sum(c["pizzas"] for c in last_tour)
-            remaining_clients_filtered = [c for c in remaining_clients if c["pizzas"] <= capacity]
-            new_client = min(remaining_clients_filtered, key=lambda c: manhattan_distance(current_position, c["position"]))
-            new_tour = last_tour + [new_client["id"]]
-            new_tour_score = tour_distance(new_tour, clients)
-            new_beam = beam + [new_tour]
-            new_beams.append((new_beam, score + new_tour_score))
+            last_tour = beam[-1] if beam else []
+            capacity = 10 - sum(c["pizzas"] for c in clients if c["id"] in last_tour)
 
-            print(f"New beam: {new_beam} - score: {score + new_tour_score}")
+            for c in remaining_clients:
+                new_client = c
+
+                if c["pizzas"] <= capacity:
+                    new_tour = last_tour + [new_client["id"]]
+
+                    if last_tour:
+                        # replace the last tour with the new one
+                        new_beam = beam[:-1] + [new_tour]
+                    else:
+                        # add the new tour to the beam
+                        new_beam = beam + [new_tour]
+                else:
+                    # go back to the depot (add the client to a new tour)
+                    new_beam = beam + [[new_client["id"]]]
+
+                new_tours_score = sum(tour_distance(t, clients) for t in new_beam)
+
+                new_beams.append((new_beam, new_tours_score))
+
+                at_least_a_new_client_added = True
+
+                # only add the new tour if it doesn't exceed the capacity
+                print(f"New beam: {new_beam} - score: {new_tours_score}")
 
         # sort the beams by score and keep only the best ones
         new_beams = sorted(new_beams, key=lambda b: b[1])[:beam_size]
 
-        if new_beams[0][1] == beams[0][1]:
-            # no improvement
+        print("New beams:")
+        for i, (beam, score) in enumerate(new_beams):
+            print(f"Beam: {i} - {beam} - score: {score}")
+
+        # replace the beams with the new beams
+        beams = new_beams
+
+        if not at_least_a_new_client_added:
+            print("No new client added, stopping")
             break
 
         depth += 1
