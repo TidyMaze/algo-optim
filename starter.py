@@ -79,6 +79,7 @@ def optimize_tour(tour, clients):
     best_found = True
 
     while best_found:
+        best_found = False
         for i, client_id in enumerate(best_tour[:-1]):
             next_client_id = best_tour[i+1]
 
@@ -91,8 +92,6 @@ def optimize_tour(tour, clients):
                 best_tour = new_tour
                 best_found = True
                 break
-
-        best_found = False
 
     new_dist = tour_distance(best_tour, clients)
     old_dist = tour_distance(tour, clients)
@@ -168,7 +167,7 @@ def solve_greedy_all(clients):
     return tours
 
 def solve_beam_search(clients):
-    beam_size = 3
+    beam_size = 4
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
