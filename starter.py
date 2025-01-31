@@ -167,7 +167,7 @@ def solve_greedy_all(clients):
     return tours
 
 def solve_beam_search(clients):
-    beam_size = 4
+    beam_size = 6
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
@@ -204,7 +204,6 @@ def solve_beam_search(clients):
                 new_beams.append((beam, score))
                 continue
 
-            last_tour = beam[-1] if beam else []
             # print(f"Last tour: {last_tour}")
 
             last_tour = beam[-1] if beam else []
