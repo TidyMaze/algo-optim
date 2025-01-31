@@ -1,3 +1,7 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+
 # Données initiales
 depot = (0, 0)  # Position du dépôt
 capacity = 10  # Capacité maximale du scooter
@@ -106,10 +110,6 @@ def optimize_tour(tour, clients):
 
 
 def display_map(clients, tours, depth, score):
-    # display the map using matplotlib
-    import matplotlib.pyplot as plt
-    import numpy as np
-
     fig, ax = plt.subplots()
 
     # set title of the plot
@@ -194,7 +194,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 1000
+    beam_size = 10000
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
@@ -210,8 +210,6 @@ def solve_beam_search(clients):
     ]
 
     depth = 0
-
-    import concurrent.futures
 
     while True:
         if depth > 1000:
