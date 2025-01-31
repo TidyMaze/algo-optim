@@ -196,7 +196,7 @@ def solve_beam_search(clients):
             remaining_clients = [c for c in clients if c["id"] not in used_clients]
 
             # print(f"Used clients: {len(used_clients)}: {list(used_clients)[:5]}")
-            remaining_clients_ids = [c["id"] for c in remaining_clients]
+            # remaining_clients_ids = [c["id"] for c in remaining_clients]
             # print(f"Remaining clients: {len(remaining_clients)}: {remaining_clients_ids}")
 
             if not remaining_clients:
