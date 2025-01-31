@@ -168,6 +168,25 @@ def solve_greedy_all(clients):
 
     return tours
 
+def expand_beam(beam, score, used_clients, clients):
+    new_beams_local = []
+    at_least_a_new_client_added = False
+    remaining_clients = [c for c in clients if c["id"] not in used_clients]
+
+    if not remaining_clients:
+        new_beams_local.append((beam, score, used_clients))
+        return new_beams_local
+
+    last_tour = beam[-1] if beam else []
+    capacity = 10 - sum(c["pizzas"] for c in clients if c["id"] in last_tour)
+
+    for c in remaining_clients:
+        new_beam_with_score = build_new_beam(beam, c, capacity, clients, last_tour, used_clients)
+        new_beams_local.append(new_beam_with_score)
+        at_least_a_new_client_added = True
+
+    return new_beams_local, at_least_a_new_client_added
+
 def solve_beam_search(clients):
     beam_size = 1000
     beams = [
@@ -184,6 +203,8 @@ def solve_beam_search(clients):
 
     depth = 0
 
+    import concurrent.futures
+
     while True:
         if depth > 1000:
             raise ValueError("Too many iterations")
@@ -193,32 +214,13 @@ def solve_beam_search(clients):
         at_least_a_new_client_added = False
 
         new_beams = []
-        for i, (beam, score, used_clients) in enumerate(beams):
-            # print(f"Beam: {i} - {beam} - score: {score}")
 
-            remaining_clients = [c for c in clients if c["id"] not in used_clients]
-
-            # print(f"Used clients: {len(used_clients)}: {list(used_clients)[:5]}")
-            # remaining_clients_ids = [c["id"] for c in remaining_clients]
-            # print(f"Remaining clients: {len(remaining_clients)}: {remaining_clients_ids}")
-
-            if not remaining_clients:
-                print("No remaining clients")
-                new_beams.append((beam, score, used_clients))
-                continue
-
-            # print(f"Last tour: {last_tour}")
-
-            last_tour = beam[-1] if beam else []
-            capacity = 10 - sum(c["pizzas"] for c in clients if c["id"] in last_tour)
-
-            for c in remaining_clients:
-                new_beam_with_score = build_new_beam(beam, c, capacity, clients, last_tour, used_clients)
-                new_beams.append(new_beam_with_score)
-                at_least_a_new_client_added = True
-
-                # only add the new tour if it doesn't exceed the capacity
-                # print(f"New beam: {new_beam} - score: {new_tours_score}")
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = [executor.submit(expand_beam, beam, score, used_clients, clients) for beam, score, used_clients in beams]
+            for future in concurrent.futures.as_completed(futures):
+                res = future.result()
+                new_beams.extend(res[0])
+                at_least_a_new_client_added = at_least_a_new_client_added or res[1]
 
         # sort the beams by score and keep only the best ones
         new_beams = sorted(new_beams, key=lambda b: b[1])[:beam_size]
