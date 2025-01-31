@@ -136,7 +136,7 @@ def display_map(clients, tours, depth, score):
         positions = [pos for pos in positions if pos is not None]
         positions.append(depot)
         positions = np.array(positions)
-        ax.plot(positions[:, 0], positions[:, 1], linestyle="--")
+        ax.plot(positions[:, 0], positions[:, 1], linestyle="-", alpha=0.5)
 
     plt.show()
 
