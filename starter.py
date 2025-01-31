@@ -175,7 +175,7 @@ def expand_beam(beam, score, used_clients, clients):
 
     if not remaining_clients:
         new_beams_local.append((beam, score, used_clients))
-        return new_beams_local
+        return new_beams_local, at_least_a_new_client_added
 
     last_tour = beam[-1] if beam else []
     capacity = 10 - sum(c["pizzas"] for c in clients if c["id"] in last_tour)
@@ -188,7 +188,7 @@ def expand_beam(beam, score, used_clients, clients):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 500
+    beam_size = 100
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
@@ -363,7 +363,7 @@ def solve():
 
     clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
-    tours = solve_pairs(clients)
+    tours = solve_beam_search(clients)
 
     print(f"Adding tour")
 
