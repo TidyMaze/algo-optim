@@ -144,10 +144,9 @@ def tour_distance(tour, clients):
 
     for client_id in tour:
         client = clients[client_id]
-        if not client:
-            raise ValueError(f"Client {client_id} not found")
-        distance += manhattan_distance(current_position, client["position"])
-        current_position = client["position"]
+        position = client["position"]
+        distance += manhattan_distance(current_position, position)
+        current_position = position
 
     distance += manhattan_distance(current_position, depot)
 
@@ -177,7 +176,9 @@ def solve_beam_search(clients):
             # the tours
             [],
             # total score of the beam
-            0
+            0,
+            # empty set of used clients
+            set()
         )
     ]
 
@@ -192,10 +193,9 @@ def solve_beam_search(clients):
         at_least_a_new_client_added = False
 
         new_beams = []
-        for i, (beam, score) in enumerate(beams):
+        for i, (beam, score, used_clients) in enumerate(beams):
             # print(f"Beam: {i} - {beam} - score: {score}")
 
-            used_clients = set(c for t in beam for c in t)
             remaining_clients = [c for c in clients if c["id"] not in used_clients]
 
             # print(f"Used clients: {len(used_clients)}: {list(used_clients)[:5]}")
@@ -204,7 +204,7 @@ def solve_beam_search(clients):
 
             if not remaining_clients:
                 print("No remaining clients")
-                new_beams.append((beam, score))
+                new_beams.append((beam, score, used_clients))
                 continue
 
             # print(f"Last tour: {last_tour}")
@@ -213,7 +213,7 @@ def solve_beam_search(clients):
             capacity = 10 - sum(c["pizzas"] for c in clients if c["id"] in last_tour)
 
             for c in remaining_clients:
-                new_beam_with_score = build_new_beam(beam, c, capacity, clients, last_tour)
+                new_beam_with_score = build_new_beam(beam, c, capacity, clients, last_tour, used_clients)
                 new_beams.append(new_beam_with_score)
                 at_least_a_new_client_added = True
 
@@ -226,7 +226,7 @@ def solve_beam_search(clients):
         max_display_beams = 3
 
         print("New beams top:")
-        for i, (beam, score) in enumerate(new_beams[:max_display_beams]):
+        for i, (beam, score, used_clients) in enumerate(new_beams[:max_display_beams]):
             print(f"Beam {i} - score: {score} - tours: {beam}")
 
         # draw the best beam
@@ -245,7 +245,7 @@ def solve_beam_search(clients):
     return new_beams[0][0]
 
 
-def build_new_beam(beam, new_client, capacity, clients, last_tour):
+def build_new_beam(beam, new_client, capacity, clients, last_tour, used_clients):
     if new_client["pizzas"] <= capacity:
         new_tour = last_tour + [new_client["id"]]
 
@@ -259,12 +259,20 @@ def build_new_beam(beam, new_client, capacity, clients, last_tour):
         # go back to the depot (add the client to a new tour)
         new_beam = beam + [[new_client["id"]]]
     new_tours_score = get_tours_distance(clients, new_beam)
-    return new_beam, new_tours_score
+
+    new_used_clients = used_clients.copy()
+    new_used_clients.add(new_client["id"])
+
+    return new_beam, new_tours_score, new_used_clients
 
 
 def get_tours_distance(clients, tours):
-    return sum(tour_distance(t, clients) for t in tours)
+    total = 0
 
+    for tour in tours:
+        total += tour_distance(tour, clients)
+
+    return total
 
 def solve_greedy(clients):
     # for each tour, find the closest client with less than capacity pizzas and go to it
