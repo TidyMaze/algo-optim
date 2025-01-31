@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from multiprocessing import Pool
+import multiprocessing
 
 
 # Données initiales
@@ -212,6 +213,9 @@ def solve_beam_search(clients):
 
     depth = 0
 
+    core_count = multiprocessing.cpu_count()
+    print(f"Core count: {core_count}")
+
     while True:
         if depth > 1000:
             raise ValueError("Too many iterations")
@@ -222,7 +226,7 @@ def solve_beam_search(clients):
 
         new_beams = []
 
-        with Pool(4) as p:
+        with Pool(core_count) as p:
             results = p.starmap(expand_beam, [(beam, score, used_clients, clients, wasted) for beam, score, used_clients, wasted in beams])
             new_beams = [b for res in results for b in res[0]]
             at_least_a_new_client_added = any(res[1] for res in results)
