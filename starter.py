@@ -194,7 +194,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 10000
+    beam_size = 1000
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
