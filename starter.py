@@ -345,7 +345,7 @@ def solve_pairs(clients):
             continue
 
         sort_fn_piz = lambda c: (
-            (-c["pizzas"], manhattan_distance(current_position, c["position"])),
+            -c["pizzas"], manhattan_distance(current_position, c["position"]),
         )
 
         closest_client = min(can_select_clients, key=sort_fn_piz)
@@ -353,10 +353,6 @@ def solve_pairs(clients):
         current_load += closest_client["pizzas"]
         current_position = closest_client["position"]
         clients_copy.remove(closest_client)
-
-    print(f"Adding tour")
-    for c in current_tour:
-        print(f"Client {c} - {clients[c]['pizzas']} pizzas")
 
     tours.append(current_tour)
 
@@ -368,6 +364,12 @@ def solve():
     clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
     tours = solve_pairs(clients)
+
+    print(f"Adding tour")
+
+    for t in tours:
+        for c in t:
+            print(f"Client {c} - {clients[c]['pizzas']} pizzas")
 
     display_map(clients, tours)
 
