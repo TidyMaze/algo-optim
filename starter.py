@@ -116,7 +116,7 @@ def display_map(clients, tours, depth, score):
     ax.set_title(f"Pizza delivery - depth {depth} - score {score}")
 
     # set figsize dimensions to 1000px
-    fig.set_size_inches(10, 10)
+    fig.set_size_inches(20, 20)
 
 
     # show the depot
