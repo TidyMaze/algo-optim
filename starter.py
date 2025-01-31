@@ -345,7 +345,7 @@ def solve_pairs(clients):
             continue
 
         sort_fn_piz = lambda c: (
-            -c["pizzas"], manhattan_distance(current_position, c["position"]),
+            -c["pizzas"]*10 + manhattan_distance(current_position, c["position"]) * 10,
         )
 
         closest_client = min(can_select_clients, key=sort_fn_piz)
