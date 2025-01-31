@@ -188,7 +188,7 @@ def expand_beam(beam, score, used_clients, clients):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 1000
+    beam_size = 500
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
@@ -220,6 +220,8 @@ def solve_beam_search(clients):
             new_beams.extend(res[0])
             at_least_a_new_client_added = at_least_a_new_client_added or res[1]
 
+        print(f"Beams count: {len(new_beams)}")
+
         # sort the beams by score and keep only the best ones
         new_beams = sorted(new_beams, key=lambda b: b[1])[:beam_size]
 
@@ -230,7 +232,7 @@ def solve_beam_search(clients):
             print(f"Beam {i} - score: {score} - tours: {beam}")
 
         # draw the best beam
-        # display_map(clients, new_beams[0][0])
+        display_map(clients, new_beams[0][0])
 
         # replace the beams with the new beams
         beams = new_beams
