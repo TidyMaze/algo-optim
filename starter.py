@@ -105,12 +105,15 @@ def optimize_tour(tour, clients):
     return best_tour
 
 
-def display_map(clients, tours):
+def display_map(clients, tours, depth, score):
     # display the map using matplotlib
     import matplotlib.pyplot as plt
     import numpy as np
 
     fig, ax = plt.subplots()
+
+    # set title of the plot
+    ax.set_title(f"Pizza delivery - depth {depth} - score {score}")
 
     # set figsize dimensions to 1000px
     fig.set_size_inches(10, 10)
@@ -188,7 +191,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 1000
+    beam_size = 100
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
@@ -236,7 +239,9 @@ def solve_beam_search(clients):
             print(f"Beam {i} - score: {score} - tours: {beam[-1]} - wasted: {wasted}")
 
         # draw the best beam
-        display_map(clients, new_beams[0][0])
+
+        if depth % 10 == 0:
+            display_map(clients, new_beams[0][0], depth, new_beams[0][1])
 
         # replace the beams with the new beams
         beams = new_beams
@@ -382,7 +387,7 @@ def solve():
         for c in t:
             print(f"Client {c} - {clients[c]['pizzas']} pizzas")
 
-    display_map(clients, tours)
+    display_map(clients, tours, 0, 0)
 
     tours_string = ""
     for tour in tours:
