@@ -168,7 +168,7 @@ def solve_greedy_all(clients):
     return tours
 
 def solve_beam_search(clients):
-    beam_size = 10
+    beam_size = 1
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
@@ -304,7 +304,7 @@ def solve():
 
     clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
-    tours = solve_greedy_all(clients)
+    tours = solve_beam_search(clients)
 
     display_map(clients, tours)
 
