@@ -124,7 +124,7 @@ def display_map(clients, tours, depth, score):
 
     # show each point on a scatter plot
     for client in clients:
-        ax.scatter(*client["position"], s=client["pizzas"]*10, alpha=0.5)
+        ax.scatter(*client["position"], s=(client["pizzas"]*3)**2, alpha=0.5)
 
     print(f"Tours count: {len(tours)}")
     print(f"Avg client per tour: {sum(len(t) for t in tours) / len(tours)}")
