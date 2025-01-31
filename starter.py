@@ -246,7 +246,7 @@ def solve_beam_search(clients):
 
         # draw the best beam
 
-        if depth % 1 == 0:
+        if depth % 10 == 0:
             display_map(clients, new_beams[0][0], depth, new_beams[0][1])
 
         # replace the beams with the new beams
