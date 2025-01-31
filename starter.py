@@ -155,7 +155,7 @@ def tour_distance(tour, clients):
 
     return distance
 
-def solve_greedy_all(clients):
+def solve_split(clients):
     # split clients in 4 (< / > 0 for x and y)
     all_splits = [
         [c for c in clients if c["position"][0] < 0 and c["position"][1] < 0],
@@ -191,7 +191,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 4
+    beam_size = 5
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
