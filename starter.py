@@ -168,7 +168,7 @@ def solve_greedy_all(clients):
     return tours
 
 def solve_beam_search(clients):
-    beam_size = 1
+    beam_size = 3
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
