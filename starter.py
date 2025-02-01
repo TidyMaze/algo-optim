@@ -10,7 +10,7 @@ depot = (0, 0)  # Position du dépôt
 capacity = 10  # Capacité maximale du scooter
 
 beam_size = 100
-keep_size = 1
+keep_size = 2
 
 # Distance de Manhattan
 @cache
