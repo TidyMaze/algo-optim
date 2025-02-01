@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt
-import numpy as np
+# import matplotlib.pyplot as plt
+# import numpy as np
 from multiprocessing import Pool
 import multiprocessing
 from functools import cache
@@ -240,7 +240,7 @@ def tour_distance(tour, clients):
     current_position = depot
 
     for client_id in tour:
-        client = [c for c in clients if c["id"] == client_id][0]
+        client = next((c for c in clients if c["id"] == client_id), None)
         position = client["position"]
         distance += manhattan_distance(current_position, position)
         current_position = position
@@ -337,7 +337,7 @@ def solve_beam_search(clients):
 
         print(f"Generation {depth} - Beams count: {len(beams)}")
 
-        multi_processing = True
+        multi_processing = False
         if multi_processing:
             with Pool(core_count) as p:
                 results = p.starmap(expand_beam, [(beam, score, used_clients, clients, wasted) for beam, score, used_clients, wasted in beams])
@@ -366,8 +366,8 @@ def solve_beam_search(clients):
 
         # draw the best beam
 
-        if depth % 1 == 0:
-            display_map(clients, new_beams[0][0], depth, new_beams[0][1])
+        # if depth % 1 == 0:
+        #     display_map(clients, new_beams[0][0], depth, new_beams[0][1])
 
         # replace the beams with the new beams
         beams = new_beams
@@ -500,7 +500,7 @@ def solve_pairs(clients):
 
     return tours
 
-import numpy as np
+# import numpy as np
 
 def calculate_savings(distance_matrix):
     num_clients = len(distance_matrix) - 1
