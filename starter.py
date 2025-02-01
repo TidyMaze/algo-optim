@@ -440,7 +440,11 @@ def clarke_wright(distance_matrix, demands, max_capacity):
             del routes[route_j]
             del route_loads[route_j]
 
-    final_routes = [route for route in routes.values()]
+    final_routes = [[0] + route + [0] for route in routes.values()]
+
+    for route in final_routes:
+        print(f"Route: {route} with total distance: {calculate_total_distance(route, distance_matrix)}")
+
     return final_routes
 
 def find_route(routes, client):
@@ -476,7 +480,11 @@ def solve_clarke_wright(clients):
     for i, client1 in enumerate(clients):
         for j, client2 in enumerate(clients):
             distance_matrix[i + 1][j + 1] = manhattan_distance(client1["position"], client2["position"])
-    return clarke_wright(distance_matrix, demands, capacity)
+    res = clarke_wright(distance_matrix, demands, capacity)
+
+    res = [[c - 1 for c in route[1:-1]] for route in res]
+
+    return res
 
 
 # Solution minimale : faire une tournée par c§lient
