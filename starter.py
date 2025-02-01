@@ -335,7 +335,7 @@ def solve_beam_search(clients):
 
         print(f"Generation {depth} - Beams count: {len(beams)}")
 
-        multi_processing = False
+        multi_processing = True
         if multi_processing:
             with Pool(core_count) as p:
                 results = p.starmap(expand_beam, [(beam, score, used_clients, clients, wasted) for beam, score, used_clients, wasted in beams])
