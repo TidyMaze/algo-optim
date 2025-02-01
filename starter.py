@@ -484,6 +484,10 @@ def solve_clarke_wright(clients):
 
     res = [[c - 1 for c in route[1:-1]] for route in res]
 
+    # optimize each tour
+    for i, route in enumerate(res):
+        res[i] = optimize_tour(route, clients)
+
     return res
 
 
