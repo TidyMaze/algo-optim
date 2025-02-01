@@ -283,7 +283,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
 
     remaining_clients_filtered = set([])
 
-    keep = 5
+    keep = 50
 
     to_add = [
         [c for c in sorted(remaining_clients, key=lambda c: manhattan_distance(depot, c["position"]))][:keep],
@@ -337,7 +337,7 @@ def solve_beam_search(clients):
 
         print(f"Generation {depth} - Beams count: {len(beams)}")
 
-        multi_processing = False
+        multi_processing = True
         if multi_processing:
             with Pool(core_count) as p:
                 results = p.starmap(expand_beam, [(beam, score, used_clients, clients, wasted) for beam, score, used_clients, wasted in beams])
@@ -584,7 +584,7 @@ def solve():
     clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
     # tours = solve_clarke_wright(clients)
-    tours = solve_split(clients)
+    tours = solve_beam_search(clients)
 
     print(f"Adding tour")
 
