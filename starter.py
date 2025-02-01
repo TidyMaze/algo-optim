@@ -118,6 +118,49 @@ def optimize_2_opt(tour, clients):
 
     return best_tour
 
+def optimize_3_opt(tour, clients):
+    # for each triplet of clients in the tour, try to swap them and keep it if the distance is shorter
+
+    best_tour = tour
+    best_found = True
+
+    while best_found:
+        best_found = False
+        for i, client_id in enumerate(best_tour[:-2]):
+            for j in range(i+1, len(best_tour)-1):
+                for k in range(j+1, len(best_tour)):
+                    next_client_id = best_tour[j]
+                    next_next_client_id = best_tour[k]
+
+                    # try to swap client with next_client
+                    new_tour = best_tour.copy()
+                    new_tour[i] = next_next_client_id
+                    new_tour[j] = client_id
+                    new_tour[k] = next_client_id
+
+                    new_dist = tour_distance(new_tour, clients)
+                    old_dist = tour_distance(best_tour, clients)
+                    if new_dist < old_dist:
+                        print(f"Tour distance improved (3 opt): {old_dist} -> {new_dist}")
+                        best_tour = new_tour
+                        best_found = True
+                        break
+
+                if best_found:
+                    break
+
+            if best_found:
+                break
+
+    new_dist = tour_distance(best_tour, clients)
+    old_dist = tour_distance(tour, clients)
+
+    if new_dist > old_dist:
+        raise ValueError(f"Tour distance increased after optimization: {old_dist} -> {new_dist}")
+
+    return best_tour
+
+
 def optimize_tour(tour, clients):
     # for each client in the tour, try to swap it with the next client and keep it if the distance is shorter
 
@@ -152,8 +195,9 @@ def optimize_tour(tour, clients):
 
 def all_optims(tour, clients):
     # apply all optimizations to a tour
-    tour = optimize_tour(tour, clients)
-    tour = optimize_2_opt(tour, clients)
+    # tour = optimize_tour(tour, clients)
+    # tour = optimize_2_opt(tour, clients)
+    tour = optimize_3_opt(tour, clients)
     return tour
 
 def display_map(clients, tours, depth, score):
