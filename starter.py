@@ -9,7 +9,7 @@ from functools import cache
 depot = (0, 0)  # Position du dépôt
 capacity = 10  # Capacité maximale du scooter
 
-beam_size = 1
+beam_size = 100
 keep_size = 1
 
 # Distance de Manhattan
