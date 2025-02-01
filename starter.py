@@ -107,6 +107,9 @@ def optimize_2_opt(tour, clients):
                     best_found = True
                     break
 
+            if best_found:
+                break
+
     new_dist = tour_distance(best_tour, clients)
     old_dist = tour_distance(tour, clients)
 
@@ -134,7 +137,7 @@ def optimize_tour(tour, clients):
             new_dist = tour_distance(new_tour, clients)
             old_dist = tour_distance(best_tour, clients)
             if new_dist < old_dist:
-                print(f"Tour distance improved: {old_dist} -> {new_dist}")
+                print(f"Tour distance improved (base optim): {old_dist} -> {new_dist}")
                 best_tour = new_tour
                 best_found = True
                 break
