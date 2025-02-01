@@ -248,10 +248,19 @@ def solve_beam_search(clients):
 
         print(f"Generation {depth} - Beams count: {len(beams)}")
 
-        with Pool(core_count) as p:
-            results = p.starmap(expand_beam, [(beam, score, used_clients, clients, wasted) for beam, score, used_clients, wasted in beams])
-            new_beams = [b for res in results for b in res[0]]
-            at_least_a_new_client_added = any(res[1] for res in results)
+        multi_processing = False
+        if multi_processing:
+            with Pool(core_count) as p:
+                results = p.starmap(expand_beam, [(beam, score, used_clients, clients, wasted) for beam, score, used_clients, wasted in beams])
+                new_beams = [b for res in results for b in res[0]]
+                at_least_a_new_client_added = any(res[1] for res in results)
+        else:
+            new_beams = []
+            at_least_a_new_client_added = False
+            for beam, score, used_clients, wasted in beams:
+                new_beams_local, at_least_a_new_client_added_local = expand_beam(beam, score, used_clients, clients, wasted)
+                new_beams += new_beams_local
+                at_least_a_new_client_added = at_least_a_new_client_added or at_least_a_new_client_added_local
 
         print(f"Beams count: {len(new_beams)}")
 
@@ -268,8 +277,8 @@ def solve_beam_search(clients):
 
         # draw the best beam
 
-        if depth % 5 == 0:
-            display_map(clients, new_beams[0][0], depth, new_beams[0][1])
+        # if depth % 5 == 0:
+        #     display_map(clients, new_beams[0][0], depth, new_beams[0][1])
 
         # replace the beams with the new beams
         beams = new_beams
