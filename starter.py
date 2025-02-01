@@ -268,6 +268,7 @@ def solve_split(clients):
 def expand_beam(beam, score, used_clients, clients, wasted):
     new_beams_local = []
     at_least_a_new_client_added = False
+
     remaining_clients = [c for c in clients if c["id"] not in used_clients]
 
     if not remaining_clients:
@@ -276,32 +277,28 @@ def expand_beam(beam, score, used_clients, clients, wasted):
 
     last_tour = beam[-1] if beam else []
     capacity = 10 - sum(c["pizzas"] for c in clients if c["id"] in last_tour)
-
     current_position = depot if not last_tour else clients[last_tour[-1]]["position"]
 
-    # print(f"Remaining clients before: {len(remaining_clients)}")
-
-    remaining_clients_filtered = set([])
-
+    remaining_clients_filtered = set()
     keep = 50
 
-    to_add = [
-        [c for c in sorted(remaining_clients, key=lambda c: manhattan_distance(depot, c["position"]))][:keep],
-        [c for c in sorted(remaining_clients, key=lambda c: -manhattan_distance(depot, c["position"]))][:keep],
-        [c for c in sorted(remaining_clients, key=lambda c: manhattan_distance(current_position, c["position"]))][:keep],
-        [c for c in sorted(remaining_clients, key=lambda c: -manhattan_distance(current_position, c["position"]))][:keep],
-        [c for c in sorted(remaining_clients, key=lambda c: -c["pizzas"])][:keep],
-        [c for c in sorted(remaining_clients, key=lambda c: c["pizzas"])][:keep],
+    # Define sorting functions
+    sort_functions = [
+        lambda c: manhattan_distance(depot, c["position"]),
+        lambda c: -manhattan_distance(depot, c["position"]),
+        lambda c: manhattan_distance(current_position, c["position"]),
+        lambda c: -manhattan_distance(current_position, c["position"]),
+        lambda c: -c["pizzas"],
+        lambda c: c["pizzas"]
     ]
 
-    for c in to_add:
-        new = set([d["id"] for d in c])
-        # print(f"Adding {new} clients")
-        remaining_clients_filtered.update(new)
+    # Filter and sort remaining clients
+    for sort_fn in sort_functions:
+        sorted_clients = sorted(remaining_clients, key=sort_fn)[:keep]
+        remaining_clients_filtered.update(c["id"] for c in sorted_clients)
 
     remaining_clients = [c for c in clients if c["id"] in remaining_clients_filtered]
-
-    # print(f"Remaining clients after: {len(remaining_clients)}")
+        # print(f"Remaining clients after: {len(remaining_clients)}")
 
     for c in remaining_clients:
         new_beam_with_score = build_new_beam(beam, c, capacity, clients, last_tour, used_clients)
@@ -337,7 +334,7 @@ def solve_beam_search(clients):
 
         print(f"Generation {depth} - Beams count: {len(beams)}")
 
-        multi_processing = False
+        multi_processing = True
         if multi_processing:
             with Pool(core_count) as p:
                 results = p.starmap(expand_beam, [(beam, score, used_clients, clients, wasted) for beam, score, used_clients, wasted in beams])
