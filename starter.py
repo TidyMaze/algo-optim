@@ -1,4 +1,4 @@
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 # import numpy as np
 from multiprocessing import Pool
 import multiprocessing
@@ -364,8 +364,8 @@ def solve_beam_search(clients):
 
         # draw the best beam
 
-        # if depth % 1 == 0:
-        #     display_map(clients, new_beams[0][0], depth, new_beams[0][1])
+        if depth % 1 == 0:
+            display_map(clients, new_beams[0][0], depth, new_beams[0][1])
 
         # replace the beams with the new beams
         beams = new_beams
