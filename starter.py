@@ -195,7 +195,7 @@ def optimize_tour(tour, clients):
 
 def all_optims(tour, clients):
     # apply all optimizations to a tour
-    tour = optimize_tour(tour, clients)
+    # tour = optimize_tour(tour, clients)
     tour = optimize_2_opt(tour, clients)
     tour = optimize_3_opt(tour, clients)
     return tour
