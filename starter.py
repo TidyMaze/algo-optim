@@ -82,6 +82,38 @@ def get_score(tours_string):
 # - biggest first inside tour => NO
 # - beam-search?
 
+def optimize_2_opt(tour, clients):
+    # for each pair of clients in the tour, try to swap them and keep it if the distance is shorter
+
+    best_tour = tour
+    best_found = True
+
+    while best_found:
+        best_found = False
+        for i, client_id in enumerate(best_tour[:-1]):
+            for j in range(i+1, len(best_tour)):
+                next_client_id = best_tour[j]
+
+                # try to swap client with next_client
+                new_tour = best_tour.copy()
+                new_tour[i] = next_client_id
+                new_tour[j] = client_id
+
+                new_dist = tour_distance(new_tour, clients)
+                old_dist = tour_distance(best_tour, clients)
+                if new_dist < old_dist:
+                    print(f"Tour distance improved (2 opt): {old_dist} -> {new_dist}")
+                    best_tour = new_tour
+                    best_found = True
+                    break
+
+    new_dist = tour_distance(best_tour, clients)
+    old_dist = tour_distance(tour, clients)
+
+    if new_dist > old_dist:
+        raise ValueError(f"Tour distance increased after optimization: {old_dist} -> {new_dist}")
+
+    return best_tour
 
 def optimize_tour(tour, clients):
     # for each client in the tour, try to swap it with the next client and keep it if the distance is shorter
@@ -115,6 +147,11 @@ def optimize_tour(tour, clients):
 
     return best_tour
 
+def all_optims(tour, clients):
+    # apply all optimizations to a tour
+    tour = optimize_tour(tour, clients)
+    tour = optimize_2_opt(tour, clients)
+    return tour
 
 def display_map(clients, tours, depth, score):
     fig, ax = plt.subplots()
@@ -489,7 +526,7 @@ def solve_clarke_wright(clients):
 
     # optimize each tour
     for i, route in enumerate(res):
-        res[i] = optimize_tour(route, clients)
+        res[i] = all_optims(route, clients)
 
     return res
 
