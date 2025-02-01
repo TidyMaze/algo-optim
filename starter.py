@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from multiprocessing import Pool
 import multiprocessing
+from functools import cache
 
 
 # Données initiales
@@ -9,6 +10,7 @@ depot = (0, 0)  # Position du dépôt
 capacity = 10  # Capacité maximale du scooter
 
 # Distance de Manhattan
+@cache
 def manhattan_distance(p1, p2):
     return fast_abs(p1[0] - p2[0]) + fast_abs(p1[1] - p2[1])
 
@@ -222,7 +224,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 1000
+    beam_size = 10000
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
