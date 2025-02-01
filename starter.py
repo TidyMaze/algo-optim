@@ -9,6 +9,9 @@ from functools import cache
 depot = (0, 0)  # Position du dépôt
 capacity = 10  # Capacité maximale du scooter
 
+beam_size = 10000
+keep_size = 50
+
 # Distance de Manhattan
 @cache
 def manhattan_distance(p1, p2):
@@ -280,7 +283,6 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     current_position = depot if not last_tour else clients[last_tour[-1]]["position"]
 
     remaining_clients_filtered = set()
-    keep = 50
 
     # Define sorting functions
     sort_functions = [
@@ -294,7 +296,7 @@ def expand_beam(beam, score, used_clients, clients, wasted):
 
     # Filter and sort remaining clients
     for sort_fn in sort_functions:
-        sorted_clients = sorted(remaining_clients, key=sort_fn)[:keep]
+        sorted_clients = sorted(remaining_clients, key=sort_fn)[:keep_size]
         remaining_clients_filtered.update(c["id"] for c in sorted_clients)
 
     remaining_clients = [c for c in clients if c["id"] in remaining_clients_filtered]
@@ -308,7 +310,6 @@ def expand_beam(beam, score, used_clients, clients, wasted):
     return new_beams_local, at_least_a_new_client_added
 
 def solve_beam_search(clients):
-    beam_size = 10000
     beams = [
         # each beam is a list of tours and the score of the tour (distance)
         (
