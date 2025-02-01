@@ -195,7 +195,7 @@ def optimize_tour(tour, clients):
 
 def all_optims(tour, clients):
     # apply all optimizations to a tour
-    # tour = optimize_tour(tour, clients)
+    tour = optimize_tour(tour, clients)
     tour = optimize_2_opt(tour, clients)
     tour = optimize_3_opt(tour, clients)
     return tour
@@ -240,7 +240,7 @@ def tour_distance(tour, clients):
     current_position = depot
 
     for client_id in tour:
-        client = clients[client_id]
+        client = [c for c in clients if c["id"] == client_id][0]
         position = client["position"]
         distance += manhattan_distance(current_position, position)
         current_position = position
@@ -261,7 +261,7 @@ def solve_split(clients):
     tours = []
 
     for split in all_splits:
-        tours += solve_beam_search(split)
+        tours += solve_greedy(split)
 
     return tours
 
@@ -454,7 +454,7 @@ def solve_greedy(clients):
             current_position = closest_client["position"]
             remaining_clients.remove(closest_client)
 
-        optimized_tour = optimize_tour(tour, clients)
+        optimized_tour = all_optims(tour, clients)
 
         tours.append(optimized_tour)
 
@@ -583,7 +583,8 @@ def solve():
 
     clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
-    tours = solve_clarke_wright(clients)
+    # tours = solve_clarke_wright(clients)
+    tours = solve_split(clients)
 
     print(f"Adding tour")
 
