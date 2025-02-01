@@ -99,7 +99,10 @@ def optimize_tour(tour, clients):
             new_tour[i] = next_client_id
             new_tour[i+1] = client_id
 
-            if tour_distance(new_tour, clients) < tour_distance(best_tour, clients):
+            new_dist = tour_distance(new_tour, clients)
+            old_dist = tour_distance(best_tour, clients)
+            if new_dist < old_dist:
+                print(f"Tour distance improved: {old_dist} -> {new_dist}")
                 best_tour = new_tour
                 best_found = True
                 break
