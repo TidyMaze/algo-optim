@@ -413,18 +413,84 @@ def solve_pairs(clients):
 
     return tours
 
+import numpy as np
+
+def calculate_savings(distance_matrix):
+    num_clients = len(distance_matrix) - 1
+    savings = []
+    for i in range(1, num_clients + 1):
+        for j in range(i + 1, num_clients + 1):
+            save = (distance_matrix[i][0] + distance_matrix[0][j] - distance_matrix[i][j])
+            savings.append((i, j, save))
+    savings.sort(key=lambda x: x[2], reverse=True)
+    return savings
+
+def clarke_wright(distance_matrix, demands, max_capacity):
+    num_clients = len(distance_matrix) - 1
+    routes = {i: [i] for i in range(1, num_clients + 1)}
+    route_loads = {i: demands[i] for i in range(1, num_clients + 1)}
+    savings = calculate_savings(distance_matrix)
+
+    for i, j, _ in savings:
+        route_i = find_route(routes, i)
+        route_j = find_route(routes, j)
+        if route_i != route_j and route_loads[route_i] + route_loads[route_j] <= max_capacity:
+            routes[route_i].extend(routes[route_j])
+            route_loads[route_i] += route_loads[route_j]
+            del routes[route_j]
+            del route_loads[route_j]
+
+    final_routes = [route for route in routes.values()]
+    return final_routes
+
+def find_route(routes, client):
+    for route_id, route in routes.items():
+        if client in route:
+            return route_id
+    return None
+
+def calculate_total_distance(route, distance_matrix):
+    return sum(distance_matrix[route[i]][route[i + 1]] for i in range(len(route) - 1))
+#
+# # Example usage:
+# distance_matrix = np.array([
+#     [0, 10, 15, 20],
+#     [10, 0, 35, 25],
+#     [15, 35, 0, 30],
+#     [20, 25, 30, 0]
+# ])
+#
+# demands = [0, 3, 4, 2]  # Demand for R, C1, C2, C3
+# max_capacity = 10
+#
+# routes = clarke_wright(distance_matrix, demands, max_capacity)
+# for route in routes:
+#     print(f"Route: {route} with total distance: {calculate_total_distance(route, distance_matrix)}")
+
+
+def solve_clarke_wright(clients):
+    # Clarke-Wright algorithm, a simple heuristic for the VRP
+    # It works by creating a tour for each client and then merging them together
+    distance_matrix = np.zeros((len(clients) + 1, len(clients) + 1))
+    demands = {i + 1: client["pizzas"] for i, client in enumerate(clients)}
+    for i, client1 in enumerate(clients):
+        for j, client2 in enumerate(clients):
+            distance_matrix[i + 1][j + 1] = manhattan_distance(client1["position"], client2["position"])
+    return clarke_wright(distance_matrix, demands, capacity)
+
+
 # Solution minimale : faire une tournée par c§lient
 def solve():
 
     clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
-    tours = solve_beam_search(clients)
+    tours = solve_clarke_wright(clients)
 
     print(f"Adding tour")
 
-    for t in tours:
+    for it, t in enumerate(tours):
         for c in t:
-            print(f"Client {c} - {clients[c]['pizzas']} pizzas")
+            print(f"Tour {it} Client {c} - {clients[c]['pizzas']} pizzas")
 
     display_map(clients, tours, 0, 0)
 
