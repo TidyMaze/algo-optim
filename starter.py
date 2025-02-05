@@ -1,3 +1,6 @@
+import math
+from itertools import permutations
+
 import matplotlib.pyplot as plt
 import numpy as np
 from multiprocessing import Pool
@@ -33,7 +36,7 @@ def load_clients(file_path):
     return clients
 
 
-def get_score(tours_string):
+def get_score(sample, tours_string):
     # Renvoie le score, la validité et un message d'erreur éventuel
     if not isinstance(tours_string, str):
         return 0, False, "❌ Erreur : Les tournées doivent être une chaîne de caractères"
@@ -47,7 +50,7 @@ def get_score(tours_string):
         return 0, False, "❌ Erreur : Une erreur inattendue s'est produite."
 
 
-    clients = load_clients("dataset.csv")
+    clients = load_clients("dataset.csv")[:sample]
 
     client_ids = {client["id"] for client in clients}
     delivered_ids = set()
@@ -57,6 +60,7 @@ def get_score(tours_string):
         current_load = 0
         current_position = depot
         for client_id in tour:
+            print(f"Client {client_id}")
             client = clients[client_id]
             if not client:
                 return 0, False, f"❌ Erreur : Le client {client_id} n'existe pas."
@@ -243,7 +247,7 @@ def tour_distance(tour, clients):
     current_position = depot
 
     for client_id in tour:
-        client = next((c for c in clients if c["id"] == client_id), None)
+        client = clients[client_id]
         position = client["position"]
         distance += manhattan_distance(current_position, position)
         current_position = position
@@ -653,19 +657,19 @@ def plan_tours(clients: list[dict[str, any]]) -> str:
         tours_string += " ".join(map(str, tour)) + "\n"
     return tours_string
 
-def evaluate_tour(clients):
+def evaluate_tour(sample, clients):
     tours_string = plan_tours(clients)
-    score, valid, message = get_score(tours_string)
+    score, valid, message = get_score(tours_string)[sample]
     return score, tours_string
 
-def solve_v5(clients: list[dict[str, any]]) -> str:
+def solve_v5(sample, clients: list[dict[str, any]]) -> str:
     min_score = 999999
     min_tour = ""
 
     for i in range(10000):
         # print(f"Generation {i}")
 
-        score, tours_string = evaluate_tour(clients)
+        score, tours_string = evaluate_tour(sample, clients)
 
         if score < min_score:
             min_score = score
@@ -677,13 +681,95 @@ def solve_v5(clients: list[dict[str, any]]) -> str:
 
     return [list(map(int, tour.split())) for tour in min_tour.strip().split("\n")]
 
-# Solution minimale : faire une tournée par c§lient
-def solve():
+def withDecimals(n, decimals):
+    return f"{n:.{decimals}f}"
 
-    clients = load_clients("dataset.csv") # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
+def solve_bruteforce(clients: list[dict[str, any]]) -> str:
+    # try all permutations
+    import itertools
+    best_score = 999999
+    best_tours = []
+
+    permutations = list(enumerate(itertools.permutations(clients)))
+
+    for i, permutation in permutations:
+        if withDecimals((i / len(permutations)) % 0.1 * 100, 5) == '0.00000':
+            print(f"Progress: {i / len(permutations) * 100}%")
+
+        tours = []
+        current_tour = []
+        current_load = 0
+
+        for client in permutation:
+            if current_load + client["pizzas"] <= capacity:
+                current_tour.append(client["id"])
+                current_load += client["pizzas"]
+            else:
+                tours.append(current_tour)
+                current_tour = [client["id"]]
+                current_load = client["pizzas"]
+
+        tours.append(current_tour)
+
+        score = get_tours_distance(clients, tours)
+
+        if score < best_score:
+            best_score = score
+            best_tours = tours
+            print(f"New best score: {best_score}")
+            # display_map(clients, best_tours, 0, best_score)
+
+    return best_tours
+
+def solve_backtracking(clients: list[dict[str, any]]) -> str:
+    # backtracking: recursive function that tries all possibilities
+    # and stops if the current path is worse than the best found so far
+    best_score = 999999
+    best_tours = []
+
+    def backtrack(tours, current_tour, current_load, current_position, remaining_clients):
+        nonlocal best_score, best_tours
+
+        if current_load > capacity:
+            return
+
+        if not remaining_clients:
+            tours.append(current_tour)
+            score = get_tours_distance(clients, tours)
+            if score < best_score:
+                best_score = score
+                best_tours = tours
+                print(f"New best score: {best_score}")
+                # display_map(clients, best_tours, 0, best_score)
+            return
+
+        for i, client in enumerate(remaining_clients):
+            if current_load + client["pizzas"] > capacity:
+                # start a new tour
+                new_tour = [client["id"]]
+                new_load = client["pizzas"]
+                new_position = client["position"]
+                new_remaining_clients = remaining_clients[:i] + remaining_clients[i+1:]
+                tours_updated = tours + [current_tour]
+            else:
+                new_tour = current_tour + [client["id"]]
+                new_load = current_load + client["pizzas"]
+                new_position = client["position"]
+                new_remaining_clients = remaining_clients[:i] + remaining_clients[i+1:]
+                tours_updated = tours
+
+            backtrack(tours_updated, new_tour, new_load, new_position, new_remaining_clients)
+
+    backtrack([], [], 0, depot, clients)
+    return best_tours
+
+# Solution minimale : faire une tournée par c§lient
+def solve(sample):
+
+    clients = load_clients("dataset.csv")[:sample] # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
     # tours = solve_clarke_wright(clients)
-    tours = solve_v5(clients)
+    tours = solve_bruteforce(clients)
 
     print(f"Adding tour")
 
@@ -698,7 +784,7 @@ def solve():
         tours_string += " ".join(map(str, tour)) + "\n"
 
     # Vous pouvez utiliser la fonction de score
-    score, valid, message = get_score(tours_string)
+    score, valid, message = get_score(sample, tours_string)
 
     return tours_string
 
@@ -708,8 +794,11 @@ def solve():
 
 if __name__ == "__main__":
     import datetime
-    tours = solve()
-    score, valid, message = get_score(tours)
+    for sample in range(1, 300):
+        print(f"Solving sample {sample}")
+        tours = solve(sample)
+        display_map(load_clients("dataset.csv")[:sample], [list(map(int, tour.split())) for tour in tours.strip().split("\n")], 0, 0)
+    score, valid, message = get_score(sample, tours)
     print(message)
 
     if valid:
