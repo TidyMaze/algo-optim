@@ -60,7 +60,6 @@ def get_score(sample, tours_string):
         current_load = 0
         current_position = depot
         for client_id in tour:
-            print(f"Client {client_id}")
             client = clients[client_id]
             if not client:
                 return 0, False, f"❌ Erreur : Le client {client_id} n'existe pas."
