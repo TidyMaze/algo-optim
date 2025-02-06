@@ -101,15 +101,13 @@ def optimize_2_opt(tour, clients):
             for j in range(i+1, len(best_tour)):
                 next_client_id = best_tour[j]
 
-                # try to swap client with next_client
-                new_tour = best_tour.copy()
-                new_tour[i] = next_client_id
-                new_tour[j] = client_id
+                # try to swap the path between client and next_client
+                new_tour = best_tour[:i] + best_tour[i:j+1][::-1] + best_tour[j+1:]
 
                 new_dist = tour_distance(new_tour, clients)
                 old_dist = tour_distance(best_tour, clients)
                 if new_dist < old_dist:
-                    # print(f"Tour distance improved (2 opt): {old_dist} -> {new_dist}")
+                    print(f"Tour distance improved (2 opt): {old_dist} -> {new_dist}")
                     best_tour = new_tour
                     best_found = True
                     break
@@ -202,7 +200,7 @@ def optimize_tour(tour, clients):
 
 def all_optims(tour, clients):
     # apply all optimizations to a tour
-    # tour = optimize_tour(tour, clients)
+    tour = optimize_tour(tour, clients)
     tour = optimize_2_opt(tour, clients)
     tour = optimize_3_opt(tour, clients)
     return tour
@@ -692,9 +690,15 @@ def solve_bruteforce(clients: list[dict[str, any]]) -> str:
 
     permutations = list(enumerate(itertools.permutations(clients)))
 
+    print("Permutations count: ", len(permutations))
+
+    next_log = 0
+    log_step = len(permutations) // 100
+
     for i, permutation in permutations:
-        if withDecimals((i / len(permutations)) % 0.1 * 100, 5) == '0.00000':
-            print(f"Progress: {i / len(permutations) * 100}%")
+        if i > next_log:
+            print(f"Progress: {withDecimals(i / len(permutations) * 100, 2)}%")
+            next_log += log_step
 
         tours = []
         current_tour = []
@@ -769,13 +773,13 @@ def solve(sample):
     clients = load_clients("dataset.csv")[:sample] # les clients sont sockés dans une liste de dict, avec pour clé "id", "position", "pizzas"
 
     # tours = solve_clarke_wright(clients)
-    tours = solve_bruteforce(clients)
+    tours = solve_greedy(clients)
 
-    print(f"Adding tour")
+    # print(f"Adding tour")
 
-    for it, t in enumerate(tours):
-        for c in t:
-            print(f"Tour {it} Client {c} - {clients[c]['pizzas']} pizzas")
+    # for it, t in enumerate(tours):
+    #     for c in t:
+    #         print(f"Tour {it} Client {c} - {clients[c]['pizzas']} pizzas")
 
     display_map(clients, tours, 0, 0)
 
@@ -794,23 +798,23 @@ def solve(sample):
 
 if __name__ == "__main__":
     import datetime
-    for sample in range(1, 300):
+    for sample in [300]:
         print(f"Solving sample {sample}")
         tours = solve(sample)
         display_map(load_clients("dataset.csv")[:sample], [list(map(int, tour.split())) for tour in tours.strip().split("\n")], 0, 0)
-    score, valid, message = get_score(sample, tours)
-    print(message)
+        score, valid, message = get_score(sample, tours)
+        print(message)
 
-    if valid:
-        print(f"Score : {score}")
+        if valid:
+            print(f"Score : {score}")
 
-        save = input('Sauvegarder la solution? (y/n): ')
-        if save.lower() == 'y':
-            date = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            file_name = f'sol_{score}_{date}'
+            save = input('Sauvegarder la solution? (y/n): ')
+            if save.lower() == 'y':
+                date = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+                file_name = f'sol_{score}_{date}'
 
-            with open(f'{file_name}.txt', 'w') as f:
-                f.write(tours)
-            print('Solution sauvegardée')
-        else:
-            print('Solution non sauvegardée')
+                with open(f'{file_name}.txt', 'w') as f:
+                    f.write(tours)
+                print('Solution sauvegardée')
+            else:
+                print('Solution non sauvegardée')
