@@ -37,7 +37,6 @@ def display_solution(clients, solution, history, probability_history):
 
     # plot the probability history as a dot plot, log scale
     plt.subplot(2, 2, 4)
-    plt.yscale('log')
     plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], c=[x[2] for x in probability_history], s=2)
 
     # average probability of acceptance
@@ -113,7 +112,7 @@ def tsp_sa(clients):
 
     INITIAL_TEMP = 1000
     temperature = INITIAL_TEMP
-    cooling_rate = 0.9999
+    cooling_rate = 0.999
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
