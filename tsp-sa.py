@@ -35,7 +35,7 @@ def display_solution(clients, solution, history, probability_history):
 
     # plot the probability history as a dot plot
     plt.subplot(2, 2, 4)
-    plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], s=1, color='red')
+    plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], c=[x[2] for x in probability_history])
     # probability with 2 decimals
     plt.title(f"Probability: {history[-1][3]:.2f}")
 
@@ -137,10 +137,11 @@ def tsp_sa(clients):
         else:
             # if the new solution is worse, accept it with a probability
             p = np.exp((cost - new_cost) / temperature)
-            probability_history.append((iteration, p))
-            probability_history = probability_history[-10000:]
-            if np.random.rand() < p:
+            kept = np.random.rand() < p
+            if kept:
                 solution = new_solution
+            probability_history.append((iteration, p, kept))
+            probability_history = probability_history[-10000:]
 
         if iteration % 100 == 0:
             display_solution(clients, best_ever, history, probability_history)
