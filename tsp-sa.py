@@ -127,7 +127,7 @@ def tsp_sa(clients):
         new_solution = solution.copy()
         i, j = 0, 0
         while i == j:
-            i, j = np.random.randint(1, len(clients)), np.random.randint(1, len(clients))
+            i, j = np.random.randint(0, len(clients)), np.random.randint(0, len(clients))
 
         # change_type = np.random.randint(0, 2)
 
