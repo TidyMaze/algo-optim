@@ -103,6 +103,7 @@ def tsp_greedy(clients):
 def tsp_sa(clients):
     # greedy solution
     solution = tsp_random(clients)
+    solution_distance = total_distance(clients, solution)
 
     best_ever = solution.copy()
     best_distance = total_distance(clients, solution)
@@ -131,12 +132,13 @@ def tsp_sa(clients):
         new_solution[i], new_solution[j] = new_solution[j], new_solution[i]
 
         # calculate the cost of the new solution
-        cost = total_distance(clients, solution)
+        cost = solution_distance
         new_cost = total_distance(clients, new_solution)
 
         # if the new solution is better, accept it
         if new_cost < cost:
             solution = new_solution
+            solution_distance = new_cost
 
             if new_cost < best_distance:
                 best_ever = new_solution
@@ -150,6 +152,7 @@ def tsp_sa(clients):
             kept = np.random.rand() < p
             if kept:
                 solution = new_solution
+                solution_distance = new_cost
             probability_history.append((iteration, p, kept))
             probability_history = probability_history[-10000:]
 
