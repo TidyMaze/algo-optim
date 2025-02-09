@@ -31,7 +31,7 @@ def display_solution(clients, solution, history, probability_history):
     # plot the temperature history
     plt.subplot(2, 2, 3)
     plt.plot([x[0] for x in history], [x[2] for x in history], color='red')
-    plt.title(f"Temperature: {history[-1][2]}")
+    plt.title(f"Temperature: {history[-1][2]:.2f}")
 
     # plot the probability history as a dot plot
     plt.subplot(2, 2, 4)
