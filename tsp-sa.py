@@ -150,6 +150,7 @@ def tsp_sa(clients):
                 best_distance = new_cost
                 print(f"New best distance {best_distance} at temperature {temperature}")
                 history.append((iteration, best_distance, temperature, 1))
+                display_solution(clients, best_ever, history, probability_history)
                 # temperature = INITIAL_TEMP
         else:
             # if the new solution is worse, accept it with a probability
