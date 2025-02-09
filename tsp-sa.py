@@ -150,7 +150,7 @@ def tsp_sa(clients):
             display_solution(clients, best_ever, history, probability_history)
 
         # decrease the temperature
-        if iteration - last_iteration_improvement > 1000:
+        if iteration - last_iteration_improvement > 100:
             print("No improvement for a long time, cooling down")
             temperature *= cooling_rate
             last_iteration_improvement = iteration
