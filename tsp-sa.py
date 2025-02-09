@@ -129,8 +129,6 @@ def tsp_sa(clients):
         while i == j:
             i, j = np.random.randint(0, len(clients)), np.random.randint(0, len(clients))
 
-        print(f"Swapping {i} and {j}")
-
         change_type = np.random.randint(0, 2)
 
         # if change_type == 0:
