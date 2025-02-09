@@ -129,13 +129,15 @@ def tsp_sa(clients):
                 best_distance = new_cost
                 print(f"New best distance {best_distance} at temperature {temperature}")
                 history.append((iteration, best_distance, temperature, 1))
-                display_solution(clients, best_ever, history, probability_history)
         else:
             # if the new solution is worse, accept it with a probability
             p = np.exp((cost - new_cost) / temperature)
             probability_history.append((iteration, p))
             if np.random.rand() < p:
                 solution = new_solution
+
+        if iteration % 100 == 0:
+            display_solution(clients, best_ever, history, probability_history)
 
         # decrease the temperature
         temperature *= cooling_rate
