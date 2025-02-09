@@ -113,7 +113,7 @@ def tsp_sa(clients):
 
     INITIAL_TEMP = 1000
     temperature = INITIAL_TEMP
-    cooling_rate = 0.999
+    cooling_rate = 0.9999
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
@@ -127,14 +127,14 @@ def tsp_sa(clients):
         new_solution = solution.copy()
         i, j = 0, 0
         while i == j:
-            i, j = np.random.randint(0, len(clients)), np.random.randint(0, len(clients))
+            i, j = np.random.randint(1, len(clients)), np.random.randint(1, len(clients))
 
-        change_type = np.random.randint(0, 2)
+        # change_type = np.random.randint(0, 2)
 
         # if change_type == 0:
-        new_solution[i], new_solution[j] = new_solution[j], new_solution[i]
+        # new_solution[i], new_solution[j] = new_solution[j], new_solution[i]
         # else:
-        #     new_solution = new_solution[:i] + new_solution[i:j][::-1] + new_solution[j:]
+        new_solution[i:j] = new_solution[i:j][::-1]
 
         # calculate the cost of the new solution
         cost = solution_distance
