@@ -70,10 +70,9 @@ def total_distance(clients, solution):
 # code a simulated annealing algorithm to solve the TSP
 
 def tsp_random(clients):
-    solution = [0]
-    for i in range(1, len(clients)):
+    solution = []
+    for i in range(0, len(clients)):
         solution.append(i)
-    solution.append(0)
     np.random.shuffle(solution)
     return solution
 
