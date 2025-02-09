@@ -103,10 +103,9 @@ def tsp_greedy(clients):
 def tsp_sa(clients):
     # greedy solution
     solution = tsp_random(clients)
-    solution_distance = total_distance(clients, solution)
 
     best_ever = solution.copy()
-    best_distance = solution_distance
+    best_distance = total_distance(clients, solution)
 
 
     # simulated annealing
@@ -123,44 +122,39 @@ def tsp_sa(clients):
 
     while True:
         iteration += 1
-        print(f"iteration {iteration} temperature {temperature}")
+        # generate a new solution
+        new_solution = solution.copy()
+        i, j = 0, 0
+        while i == j:
+            i, j = np.random.randint(0, len(clients)), np.random.randint(0, len(clients))
 
-        for i in range(len(clients)):
-            for j in range(i+1, len(clients)):
-                # print(f"iteration {iteration} temperature {temperature} i {i} j {j}")
-                if i != j:
-                    # generate a new solution
-                    new_solution = solution.copy()
-                    new_solution[i], new_solution[j] = new_solution[j], new_solution[i]
+        new_solution[i], new_solution[j] = new_solution[j], new_solution[i]
 
-                    # calculate the cost of the new solution
-                    cost = solution_distance
-                    new_cost = total_distance(clients, new_solution)
+        # calculate the cost of the new solution
+        cost = total_distance(clients, solution)
+        new_cost = total_distance(clients, new_solution)
 
-                    # if the new solution is better, accept it
-                    if new_cost < cost:
-                        solution = new_solution
-                        solution_distance = new_cost
+        # if the new solution is better, accept it
+        if new_cost < cost:
+            solution = new_solution
 
-                        if new_cost < best_distance:
-                            best_ever = new_solution
-                            best_distance = new_cost
-                            print(f"New best distance {best_distance} at temperature {temperature}")
-                            history.append((iteration, best_distance, temperature, 1))
-                            display_solution(clients, best_ever, history, probability_history)
-                            # temperature = INITIAL_TEMP
-                    else:
-                        # if the new solution is worse, accept it with a probability
-                        p = np.exp((cost - new_cost) / temperature)
-                        kept = np.random.rand() < p
-                        if kept:
-                            solution = new_solution
-                            solution_distance = new_cost
-                        probability_history.append((iteration, p, kept))
-                        probability_history = probability_history[-10000:]
+            if new_cost < best_distance:
+                best_ever = new_solution
+                best_distance = new_cost
+                print(f"New best distance {best_distance} at temperature {temperature}")
+                history.append((iteration, best_distance, temperature, 1))
+                # temperature = INITIAL_TEMP
+        else:
+            # if the new solution is worse, accept it with a probability
+            p = np.exp((cost - new_cost) / temperature)
+            kept = np.random.rand() < p
+            if kept:
+                solution = new_solution
+            probability_history.append((iteration, p, kept))
+            probability_history = probability_history[-10000:]
 
-        # if iteration % 100 == 0:
-        display_solution(clients, best_ever, history, probability_history)
+        if iteration % 100 == 0:
+            display_solution(clients, best_ever, history, probability_history)
 
         temperature *= cooling_rate
     return solution
