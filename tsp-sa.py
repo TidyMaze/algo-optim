@@ -104,14 +104,14 @@ def tsp_sa(clients):
 
 
     # simulated annealing
-    temperature = 100
-    cooling_rate = 0.9999
+    temperature = 1000
+    cooling_rate = 0.999
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
     probability_history = []
 
-    while temperature > 1:
+    while True:
         iteration += 1
         # generate a new solution
         new_solution = solution.copy()
