@@ -17,6 +17,7 @@ def display_solution(clients, solution, history, probability_history):
     # plot the score history
     plt.subplot(2, 2, 1)
     plt.plot([x[0] for x in history], [x[1] for x in history])
+    plt.title(f"Best distance: {history[-1][1]}")
 
     # plot the solution
     plt.subplot(2, 2, 2)
@@ -25,14 +26,17 @@ def display_solution(clients, solution, history, probability_history):
     # segment color is relative to the distance
     for i in range(len(solution) - 1):
         plt.plot([clients['x'][solution[i]], clients['x'][solution[i+1]]], [clients['y'][solution[i]], clients['y'][solution[i+1]]], color=plt.cm.viridis(i / len(solution)))
+    plt.title(f"Solution distance: {total_distance(clients, solution)}")
 
     # plot the temperature history
     plt.subplot(2, 2, 3)
     plt.plot([x[0] for x in history], [x[2] for x in history], color='red')
+    plt.title(f"Temperature: {history[-1][2]}")
 
     # plot the probability history as a dot plot
     plt.subplot(2, 2, 4)
     plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], s=1, color='red')
+    plt.title(f"Probability: {probability_history[-1][1]}")
 
     plt.show()
 
@@ -99,7 +103,7 @@ def tsp_sa(clients):
 
 
     # simulated annealing
-    temperature = 10000
+    temperature = 100
     cooling_rate = 0.9999
 
     iteration = 0
@@ -133,6 +137,7 @@ def tsp_sa(clients):
             # if the new solution is worse, accept it with a probability
             p = np.exp((cost - new_cost) / temperature)
             probability_history.append((iteration, p))
+            probability_history = probability_history[-100000:]
             if np.random.rand() < p:
                 solution = new_solution
 
