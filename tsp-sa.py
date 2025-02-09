@@ -104,7 +104,9 @@ def tsp_sa(clients):
 
 
     # simulated annealing
-    temperature = 10000
+
+    INITIAL_TEMP = 1000
+    temperature = INITIAL_TEMP
     cooling_rate = 0.99
 
     iteration = 0
@@ -136,7 +138,7 @@ def tsp_sa(clients):
                 best_distance = new_cost
                 print(f"New best distance {best_distance} at temperature {temperature}")
                 history.append((iteration, best_distance, temperature, 1))
-                temperature = 10000
+                temperature = INITIAL_TEMP
         else:
             # if the new solution is worse, accept it with a probability
             p = np.exp((cost - new_cost) / temperature)
