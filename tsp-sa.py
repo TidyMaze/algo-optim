@@ -102,7 +102,7 @@ def tsp_greedy(clients):
 # simulated annealing
 def tsp_sa(clients):
     # greedy solution
-    solution = tsp_greedy(clients)
+    solution = tsp_random(clients)
     solution_distance = total_distance(clients, solution)
 
     best_ever = solution.copy()
@@ -161,7 +161,7 @@ def tsp_sa(clients):
             probability_history.append((iteration, p, worse_selected))
             probability_history = probability_history[-10000:]
 
-        if iteration % 10000 == 0:
+        if iteration % 100 == 0:
             display_solution(clients, best_ever, history, probability_history)
 
         temperature *= cooling_rate
