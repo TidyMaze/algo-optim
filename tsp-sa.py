@@ -35,7 +35,7 @@ def display_solution(clients, solution, history, probability_history):
 
     # plot the probability history as a dot plot
     plt.subplot(2, 2, 4)
-    plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], c=[x[2] for x in probability_history])
+    plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], c=[x[2] for x in probability_history], s=2)
     # probability with 2 decimals
     plt.title(f"Probability: {history[-1][3]:.2f}")
 
