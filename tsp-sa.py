@@ -48,7 +48,7 @@ def display_solution(clients, solution, history, probability_history):
 
 print('hi')
 
-clients = load_clients('dataset.csv')
+clients = load_clients('dataset.csv')[:100]
 df = pd.DataFrame(clients)
 
 # add a new x and y column to the dataframe
@@ -129,7 +129,12 @@ def tsp_sa(clients):
         while i == j:
             i, j = np.random.randint(0, len(clients)), np.random.randint(0, len(clients))
 
-        new_solution[i], new_solution[j] = new_solution[j], new_solution[i]
+        change_type = np.random.randint(0, 2)
+
+        if change_type == 0:
+            new_solution[i], new_solution[j] = new_solution[j], new_solution[i]
+        else:
+            new_solution = new_solution[:i] + new_solution[i:j][::-1] + new_solution[j:]
 
         # calculate the cost of the new solution
         cost = solution_distance
@@ -156,7 +161,7 @@ def tsp_sa(clients):
             probability_history.append((iteration, p, worse_selected))
             probability_history = probability_history[-10000:]
 
-        if iteration % 1000 == 0:
+        if iteration % 10000 == 0:
             display_solution(clients, best_ever, history, probability_history)
 
         temperature *= cooling_rate
