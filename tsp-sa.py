@@ -48,7 +48,7 @@ def display_solution(clients, solution, history, probability_history):
 
 print('hi')
 
-clients = load_clients('dataset.csv')[:3]
+clients = load_clients('dataset.csv')[:32]
 df = pd.DataFrame(clients)
 
 # add a new x and y column to the dataframe
@@ -128,6 +128,8 @@ def tsp_sa(clients):
         i, j = 0, 0
         while i == j:
             i, j = np.random.randint(0, len(clients)), np.random.randint(0, len(clients))
+
+        print(f"Swapping {i} and {j}")
 
         change_type = np.random.randint(0, 2)
 
