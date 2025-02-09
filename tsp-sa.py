@@ -161,7 +161,7 @@ def tsp_sa(clients):
             probability_history.append((iteration, p, worse_selected))
             probability_history = probability_history[-10000:]
 
-        if iteration % 100 == 0:
+        if iteration % 1000 == 0:
             display_solution(clients, best_ever, history, probability_history)
 
         temperature *= cooling_rate
