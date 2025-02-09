@@ -149,11 +149,11 @@ def tsp_sa(clients):
         else:
             # if the new solution is worse, accept it with a probability
             p = np.exp((cost - new_cost) / temperature)
-            kept = np.random.rand() < p
-            if kept:
+            worse_selected = np.random.rand() < p
+            if worse_selected:
                 solution = new_solution
                 solution_distance = new_cost
-            probability_history.append((iteration, p, kept))
+            probability_history.append((iteration, p, worse_selected))
             probability_history = probability_history[-10000:]
 
         if iteration % 100 == 0:
