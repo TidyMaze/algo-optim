@@ -102,7 +102,7 @@ def tsp_greedy(clients):
 # simulated annealing
 def tsp_sa(clients):
     # greedy solution
-    solution = tsp_random(clients)
+    solution = tsp_greedy(clients)
     solution_distance = total_distance(clients, solution)
 
     best_ever = solution.copy()
