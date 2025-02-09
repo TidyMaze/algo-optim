@@ -36,7 +36,10 @@ def display_solution(clients, solution, history, probability_history):
     # plot the probability history as a dot plot
     plt.subplot(2, 2, 4)
     plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], c=[x[2] for x in probability_history], s=2)
-    # probability with 2 decimals
+
+    # average probability of acceptance
+    plt.axhline(y=np.mean([x[1] for x in probability_history[-1000:]]), color='red', linestyle='--')
+
     plt.title(f"Probability: {history[-1][3]:.2f}")
 
     plt.show()
@@ -107,7 +110,7 @@ def tsp_sa(clients):
 
     INITIAL_TEMP = 1000
     temperature = INITIAL_TEMP
-    cooling_rate = 0.99
+    cooling_rate = 0.9999
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
@@ -138,7 +141,7 @@ def tsp_sa(clients):
                 best_distance = new_cost
                 print(f"New best distance {best_distance} at temperature {temperature}")
                 history.append((iteration, best_distance, temperature, 1))
-                temperature = INITIAL_TEMP
+                # temperature = INITIAL_TEMP
         else:
             # if the new solution is worse, accept it with a probability
             p = np.exp((cost - new_cost) / temperature)
