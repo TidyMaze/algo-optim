@@ -136,8 +136,6 @@ def tsp_sa(clients):
             probability_history.append((iteration, p))
             if np.random.rand() < p:
                 solution = new_solution
-                if p <= 0.99:
-                    print(f"Accept worse solution with probability {p}")
 
         # decrease the temperature
         temperature *= cooling_rate
