@@ -9,7 +9,7 @@ def display(clients):
     plt.scatter(clients['x'], clients['y'])
     plt.show()
 
-def display_solution(clients, solution, history):
+def display_solution(clients, solution, history, probability_history):
 
     # 2 plots: the first one is the score history and the second one is the solution
     plt.figure(figsize=(10, 10))
@@ -29,6 +29,10 @@ def display_solution(clients, solution, history):
     # plot the temperature history
     plt.subplot(2, 2, 3)
     plt.plot([x[0] for x in history], [x[2] for x in history], color='red')
+
+    # plot the probability history as a dot plot
+    plt.subplot(2, 2, 4)
+    plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], s=1, color='red')
 
     plt.show()
 
@@ -95,13 +99,14 @@ def tsp_sa(clients):
 
 
     # simulated annealing
-    temperature = 100
+    temperature = 10000
     cooling_rate = 0.999
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
+    probability_history = []
 
-    while True:
+    while temperature > 1:
         iteration += 1
         # generate a new solution
         new_solution = solution.copy()
@@ -124,10 +129,11 @@ def tsp_sa(clients):
                 best_distance = new_cost
                 print(f"New best distance {best_distance} at temperature {temperature}")
                 history.append((iteration, best_distance, temperature, 1))
-                display_solution(clients, best_ever, history)
+                display_solution(clients, best_ever, history, probability_history)
         else:
             # if the new solution is worse, accept it with a probability
             p = np.exp((cost - new_cost) / temperature)
+            probability_history.append((iteration, p))
             if np.random.rand() < p:
                 solution = new_solution
                 if p <= 0.99:
@@ -140,8 +146,5 @@ def tsp_sa(clients):
 
 solution = tsp_sa(df)
 print(solution)
-
-# display the solution
-display_solution(df, solution)
 
 print(total_distance(df, solution))
