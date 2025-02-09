@@ -104,8 +104,8 @@ def tsp_sa(clients):
 
 
     # simulated annealing
-    temperature = 1000
-    cooling_rate = 0.999
+    temperature = 10000
+    cooling_rate = 0.99
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
@@ -149,12 +149,7 @@ def tsp_sa(clients):
         if iteration % 100 == 0:
             display_solution(clients, best_ever, history, probability_history)
 
-        # decrease the temperature
-        if iteration - last_iteration_improvement > 100:
-            print("No improvement for a long time, cooling down")
-            temperature *= cooling_rate
-            last_iteration_improvement = iteration
-
+        temperature *= cooling_rate
     return solution
 
 solution = tsp_sa(df)
