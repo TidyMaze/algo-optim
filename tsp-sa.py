@@ -17,7 +17,7 @@ def display_solution(clients, solution, history, probability_history):
     # plot the score history
     plt.subplot(2, 2, 1)
     plt.plot([x[0] for x in history], [x[1] for x in history])
-    plt.title(f"Best distance: {history[-1][1]}")
+    plt.title(f"Best distance found: {history[-1][1]:.2f}")
 
     # plot the solution
     plt.subplot(2, 2, 2)
@@ -26,7 +26,7 @@ def display_solution(clients, solution, history, probability_history):
     # segment color is relative to the distance
     for i in range(len(solution) - 1):
         plt.plot([clients['x'][solution[i]], clients['x'][solution[i+1]]], [clients['y'][solution[i]], clients['y'][solution[i+1]]], color=plt.cm.viridis(i / len(solution)))
-    plt.title(f"Solution distance: {total_distance(clients, solution)}")
+    plt.title(f"Best solution found: {history[-1][1]:.2f}")
 
     # plot the temperature history
     plt.subplot(2, 2, 3)
@@ -36,7 +36,8 @@ def display_solution(clients, solution, history, probability_history):
     # plot the probability history as a dot plot
     plt.subplot(2, 2, 4)
     plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], s=1, color='red')
-    plt.title(f"Probability: {probability_history[-1][1]}")
+    # probability with 2 decimals
+    plt.title(f"Probability: {history[-1][3]:.2f}")
 
     plt.show()
 
