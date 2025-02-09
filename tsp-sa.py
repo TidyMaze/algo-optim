@@ -48,7 +48,7 @@ def display_solution(clients, solution, history, probability_history):
 
 print('hi')
 
-clients = load_clients('dataset.csv')[:64]
+clients = load_clients('dataset.csv')[:128]
 df = pd.DataFrame(clients)
 
 # add a new x and y column to the dataframe
