@@ -14,8 +14,9 @@ def display_solution(clients, solution, history, probability_history):
     # 2 plots: the first one is the score history and the second one is the solution
     plt.figure(figsize=(10, 10))
 
-    # plot the score history
+    # plot the score history, log scale
     plt.subplot(2, 2, 1)
+    plt.yscale('log')
     plt.plot([x[0] for x in history], [x[1] for x in history])
     plt.title(f"Best distance found: {history[-1][1]:.2f}")
 
@@ -28,13 +29,15 @@ def display_solution(clients, solution, history, probability_history):
         plt.plot([clients['x'][solution[i]], clients['x'][solution[i+1]]], [clients['y'][solution[i]], clients['y'][solution[i+1]]], color=plt.cm.viridis(i / len(solution)))
     plt.title(f"Best solution found: {history[-1][1]:.2f}")
 
-    # plot the temperature history
+    # plot the temperature history, log scale
     plt.subplot(2, 2, 3)
+    plt.yscale('log')
     plt.plot([x[0] for x in history], [x[2] for x in history], color='red')
     plt.title(f"Temperature: {history[-1][2]:.2f}")
 
-    # plot the probability history as a dot plot
+    # plot the probability history as a dot plot, log scale
     plt.subplot(2, 2, 4)
+    plt.yscale('log')
     plt.scatter([x[0] for x in probability_history], [x[1] for x in probability_history], c=[x[2] for x in probability_history], s=2)
 
     # average probability of acceptance
