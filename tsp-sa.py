@@ -136,7 +136,7 @@ def tsp_sa(clients):
                 best_distance = new_cost
                 print(f"New best distance {best_distance} at temperature {temperature}")
                 history.append((iteration, best_distance, temperature, 1))
-                last_iteration_improvement = iteration
+                temperature = 10000
         else:
             # if the new solution is worse, accept it with a probability
             p = np.exp((cost - new_cost) / temperature)
