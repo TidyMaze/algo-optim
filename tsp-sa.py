@@ -179,7 +179,7 @@ def tsp_sa(clients):
 
         if iteration % 10000 == 0:
             display_solution(clients, best_ever, history, probability_history)
-            print(f'Lengths: {len(history)}, {len(probability_history)}')
+            # print(f'Lengths: {len(history)}, {len(probability_history)}')
 
         temperature *= cooling_rate
         temperature = max(temperature, 0.0001)
