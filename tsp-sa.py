@@ -71,8 +71,6 @@ print(df.describe())
 def distance_between_clients(i, j):
     return ((df['x'][i] - df['x'][j])**2 + (df['y'][i] - df['y'][j])**2)**0.5
 
-# print the total distance of the solution
-@cache
 def total_distance(solution):
     # assert len(solution) == len(clients)
     # assert set(solution) == set([i for i in range(len(clients))])
@@ -120,10 +118,10 @@ def tsp_sa(clients):
 
     # greedy solution
     solution = tsp_random(clients)
-    solution_distance = total_distance(tuple(solution))
+    solution_distance = total_distance(solution)
 
     best_ever = solution.copy()
-    best_distance = total_distance(tuple(solution))
+    best_distance = total_distance(solution)
 
 
     # simulated annealing
@@ -152,7 +150,7 @@ def tsp_sa(clients):
 
         # calculate the cost of the new solution
         cost = solution_distance
-        new_cost = total_distance(tuple(new_solution))
+        new_cost = total_distance(new_solution)
 
         # if the new solution is better, accept it
         if new_cost < cost:
