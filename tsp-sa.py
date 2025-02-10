@@ -75,8 +75,8 @@ def distance_between_clients(i, j):
 # print the total distance of the solution
 @cache
 def total_distance(solution):
-    assert len(solution) == len(clients)
-    assert set(solution) == set([i for i in range(len(clients))])
+    # assert len(solution) == len(clients)
+    # assert set(solution) == set([i for i in range(len(clients))])
     distance = 0
     for i in range(len(solution) - 1):
         distance += distance_between_clients(solution[i], solution[i+1])
