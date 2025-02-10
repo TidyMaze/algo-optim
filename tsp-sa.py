@@ -129,9 +129,9 @@ def tsp_sa(clients):
 
     # simulated annealing
 
-    INITIAL_TEMP = 10
+    INITIAL_TEMP = 5
     temperature = INITIAL_TEMP
-    cooling_rate = 0.9999999
+    cooling_rate = 0.999999
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
