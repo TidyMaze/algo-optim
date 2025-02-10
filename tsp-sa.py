@@ -1,3 +1,5 @@
+from functools import cache
+
 import numpy as np
 
 from starter import load_clients, display_map
@@ -22,11 +24,17 @@ def display_solution(clients, solution, history, probability_history):
 
     # plot the solution
     plt.subplot(2, 2, 2)
-    plt.scatter(clients['x'], clients['y'])
+    plt.scatter([client['x'] for client in clients], [client['y'] for client in clients], color='blue')
 
     # segment color is relative to the distance
     for i in range(len(solution) - 1):
-        plt.plot([clients['x'][solution[i]], clients['x'][solution[i+1]]], [clients['y'][solution[i]], clients['y'][solution[i+1]]], color=plt.cm.viridis(i / len(solution)))
+        x = [clients[solution[i]]['x'], clients[solution[i+1]]['x']]
+        y = [clients[solution[i]]['y'], clients[solution[i+1]]['y']]
+
+        plt.plot(
+            x, y,
+            color=plt.cm.viridis(i / len(solution))
+        )
     plt.title(f"Best solution found: {history[-1][1]:.2f}")
 
     # plot the temperature history, log scale
@@ -60,11 +68,15 @@ print(df.describe())
 
 # display(df)
 
+@cache
+def distance_between_clients(i, j):
+    return ((df['x'][i] - df['x'][j])**2 + (df['y'][i] - df['y'][j])**2)**0.5
+
 # print the total distance of the solution
-def total_distance(clients, solution):
+def total_distance(solution):
     distance = 0
     for i in range(len(solution) - 1):
-        distance += ((clients['x'][solution[i]] - clients['x'][solution[i+1]])**2 + (clients['y'][solution[i]] - clients['y'][solution[i+1]])**2)**0.5
+        distance += distance_between_clients(solution[i], solution[i+1])
     return distance
 
 # code a simulated annealing algorithm to solve the TSP
@@ -100,12 +112,16 @@ def tsp_greedy(clients):
 
 # simulated annealing
 def tsp_sa(clients):
+    # convert the clients dataframe to a list of dict
+    clients = clients.to_dict(orient='records')
+    print(clients)
+
     # greedy solution
     solution = tsp_random(clients)
-    solution_distance = total_distance(clients, solution)
+    solution_distance = total_distance(solution)
 
     best_ever = solution.copy()
-    best_distance = total_distance(clients, solution)
+    best_distance = total_distance(solution)
 
 
     # simulated annealing
@@ -134,7 +150,7 @@ def tsp_sa(clients):
 
         # calculate the cost of the new solution
         cost = solution_distance
-        new_cost = total_distance(clients, new_solution)
+        new_cost = total_distance(new_solution)
 
         # if the new solution is better, accept it
         if new_cost < cost:
