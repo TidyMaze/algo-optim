@@ -175,8 +175,6 @@ def tsp_sa(clients):
             if worse_selected:
                 solution = new_solution
                 solution_distance = new_cost
-                temperature *= cooling_rate
-                temperature = max(temperature, 0.0001)
             probability_history.append((iteration, p, worse_selected))
             probability_history = probability_history[-10000:]
 
