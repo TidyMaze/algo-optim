@@ -12,7 +12,6 @@ def display(clients):
     plt.show()
 
 def display_solution(clients, solution, history, probability_history):
-
     # 2 plots: the first one is the score history and the second one is the solution
     plt.figure(figsize=(10, 10))
 
