@@ -175,7 +175,7 @@ def tsp_sa(clients):
             probability_history.append((iteration, p, worse_selected))
             probability_history = probability_history[-1000:]
 
-        if iteration % 10000 == 0:
+        if iteration % 100000 == 0:
             display_solution(clients, best_ever, history, probability_history)
             print(f'Lengths: {len(history)}, {len(probability_history)}')
 
