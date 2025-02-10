@@ -50,7 +50,7 @@ def display_solution(clients, solution, history, probability_history):
     # average probability of acceptance
     plt.axhline(y=np.mean([x[1] for x in probability_history[-1000:]]), color='red', linestyle='--')
 
-    plt.title(f"Probability: {history[-1][3]:.2f}")
+    plt.title(f"Probability: {np.mean([x[1] for x in probability_history[-1000:]]):.2f}")
 
     plt.show()
 
