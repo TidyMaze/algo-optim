@@ -24,7 +24,7 @@ def display_solution(clients, solution, history, probability_history):
 
     # plot the solution
     plt.subplot(2, 2, 2)
-    plt.scatter([client['x'] for client in clients], [client['y'] for client in clients], color='blue')
+    plt.scatter([client['x'] for client in clients], [client['y'] for client in clients], color='blue', s=2)
 
     # segment color is relative to the distance
     for i in range(len(solution) - 1):
