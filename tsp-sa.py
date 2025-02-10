@@ -165,6 +165,7 @@ def tsp_sa(clients):
                 best_distance = new_cost
                 print(f"New best distance {best_distance} at temperature {temperature} at iteration {iteration} (at date {pd.Timestamp.now()})")
                 history.append((iteration, best_distance, temperature, 1))
+                history = history[-1000:]
                 # display_solution(clients, best_ever, history, probability_history)
                 # temperature = INITIAL_TEMP
         else:
