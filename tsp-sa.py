@@ -128,7 +128,7 @@ def tsp_sa(clients):
 
     INITIAL_TEMP = 100
     temperature = INITIAL_TEMP
-    cooling_rate = 0.99999
+    cooling_rate = 0.999999
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
@@ -180,7 +180,7 @@ def tsp_sa(clients):
             print(f'Lengths: {len(history)}, {len(probability_history)}')
 
         temperature *= cooling_rate
-        temperature = max(temperature, 0.01)
+        temperature = max(temperature, 0.00001)
     return solution
 
 solution = tsp_sa(df)
