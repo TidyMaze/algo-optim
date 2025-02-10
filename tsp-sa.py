@@ -75,6 +75,7 @@ def distance_between_clients(i, j):
 # print the total distance of the solution
 @cache
 def total_distance(solution):
+    assert len(solution) == len(clients)
     distance = 0
     for i in range(len(solution) - 1):
         distance += distance_between_clients(solution[i], solution[i+1])
@@ -129,7 +130,7 @@ def tsp_sa(clients):
 
     INITIAL_TEMP = 10000
     temperature = INITIAL_TEMP
-    cooling_rate = 0.9999999
+    cooling_rate = 0.999999
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
@@ -161,7 +162,7 @@ def tsp_sa(clients):
             if new_cost < best_distance:
                 best_ever = new_solution
                 best_distance = new_cost
-                print(f"New best distance {best_distance} at temperature {temperature}")
+                print(f"New best distance {best_distance} at temperature {temperature} at iteration {iteration} (at date {pd.Timestamp.now()})")
                 history.append((iteration, best_distance, temperature, 1))
                 # display_solution(clients, best_ever, history, probability_history)
                 # temperature = INITIAL_TEMP
@@ -175,8 +176,8 @@ def tsp_sa(clients):
             probability_history.append((iteration, p, worse_selected))
             probability_history = probability_history[-10000:]
 
-        if iteration % 50000 == 0:
-            display_solution(clients, best_ever, history, probability_history)
+        # if iteration % 50000 == 0:
+            # display_solution(clients, best_ever, history, probability_history)
 
         temperature *= cooling_rate
         temperature = max(temperature, 0.0001)
