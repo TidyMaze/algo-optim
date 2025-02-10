@@ -166,6 +166,8 @@ def tsp_sa(clients):
                 history.append((iteration, best_distance, temperature, 1))
                 # display_solution(clients, best_ever, history, probability_history)
                 # temperature = INITIAL_TEMP
+                temperature *= cooling_rate
+                temperature = max(temperature, 0.0001)
         else:
             # if the new solution is worse, accept it with a probability
             p = np.exp((cost - new_cost) / temperature)
@@ -173,14 +175,13 @@ def tsp_sa(clients):
             if worse_selected:
                 solution = new_solution
                 solution_distance = new_cost
+                temperature *= cooling_rate
+                temperature = max(temperature, 0.0001)
             probability_history.append((iteration, p, worse_selected))
             probability_history = probability_history[-10000:]
 
-        # if iteration % 50000 == 0:
-            # display_solution(clients, best_ever, history, probability_history)
-
-        temperature *= cooling_rate
-        temperature = max(temperature, 0.0001)
+        if iteration % 50000 == 0:
+            display_solution(clients, best_ever, history, probability_history)
     return solution
 
 solution = tsp_sa(df)
