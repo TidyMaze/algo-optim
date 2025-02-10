@@ -129,7 +129,7 @@ def tsp_sa(clients):
 
     INITIAL_TEMP = 1000
     temperature = INITIAL_TEMP
-    cooling_rate = 0.999
+    cooling_rate = 0.999999
 
     iteration = 0
     history = [(0, best_distance, temperature, 1)]
