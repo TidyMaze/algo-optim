@@ -129,7 +129,7 @@ def tsp_sa(clients):
 
     # simulated annealing
 
-    INITIAL_TEMP = 10
+    INITIAL_TEMP = 100
     temperature = INITIAL_TEMP
     cooling_rate = 0.999999
 
